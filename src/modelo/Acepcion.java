@@ -15,14 +15,12 @@ public class Acepcion {
     
     private String acepcion;
     private String ejemplo;
-    private String vocablo;
 
     
-    public Acepcion(String acepcion, String ejemplo, String vocablo) {
+    public Acepcion(String acepcion, String ejemplo) {
         
         this.acepcion = acepcion;
         this.ejemplo = ejemplo;
-        this.vocablo = vocablo;
         
     }
     
@@ -39,15 +37,8 @@ public class Acepcion {
         return ejemplo;
 
     }
-
     
-    public String getVocablo() {
-
-        return vocablo;
-
-    }
     
-
     public void setAcepcion(String acepcion) {
         
         this.acepcion = acepcion;
@@ -61,13 +52,6 @@ public class Acepcion {
         
     }
 
-    
-    public void setVocablo(String vocablo) {
-        
-        this.vocablo = vocablo;
-        
-    }
-    
 
     @Override
     public boolean equals(Object obj) {
@@ -84,18 +68,12 @@ public class Acepcion {
         if (!Objects.equals(this.acepcion, other.acepcion)) {
             return false;
         }
-        if (!Objects.equals(this.ejemplo, other.ejemplo)) {
-            return false;
-        }
-        if (!Objects.equals(this.vocablo, other.vocablo)) {
-            return false;
-        }
         return true;
     }
 
     @Override
     public String toString() {
-        return "Acepcion{" + "acepcion=" + acepcion + ", ejemplo=" + ejemplo + ", vocablo=" + vocablo + '}';
+        return "\n  " + acepcion + ":  " + ejemplo;
     }
 
     

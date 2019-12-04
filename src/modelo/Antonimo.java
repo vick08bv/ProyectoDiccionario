@@ -13,20 +13,20 @@ import java.util.Objects;
  */
 public class Antonimo {
     
-    private String palabra;
+    private String antonimo;
     private String vocablo;
 
     
     public Antonimo(String palabra, String vocablo) {
         
-        this.palabra = palabra;
+        this.antonimo = palabra;
         this.vocablo = vocablo;
         
     }
 
-    public String getPalabra() {
+    public String getAntonimo() {
         
-        return palabra;
+        return antonimo;
         
     }
 
@@ -37,9 +37,9 @@ public class Antonimo {
         
     }
 
-    public void setPalabra(String palabra) {
+    public void setAntonimo(String antonimo) {
         
-        this.palabra = palabra;
+        this.antonimo = antonimo;
         
     }
 
@@ -63,13 +63,19 @@ public class Antonimo {
             return false;
         }
         final Antonimo other = (Antonimo) obj;
-        if (!Objects.equals(this.palabra, other.palabra)) {
+        if (!Objects.equals(this.antonimo, other.antonimo)) {
             return false;
         }
         if (!Objects.equals(this.vocablo, other.vocablo)) {
             return false;
         }
         return true;
+    }
+
+    
+    @Override
+    public String toString() {
+        return "\n  " + antonimo;
     }
 
     

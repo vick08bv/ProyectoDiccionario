@@ -82,7 +82,7 @@ public class Vocablo {
     @Override
     public String toString() {
 
-        return "Vocablo{" + "vocablo=" + vocablo + ", categoria=" + categoria + ", es_soez=" + es_soez + '}';
+        return "\n  " + vocablo;
     
     }
      

@@ -13,20 +13,20 @@ import java.util.Objects;
  */
 public class Derivado {
     
-    private String palabra;
+    private String derivado;
     private String vocablo;
 
     
     public Derivado(String palabra, String vocablo) {
         
-        this.palabra = palabra;
+        this.derivado = palabra;
         this.vocablo = vocablo;
         
     }
 
-    public String getPalabra() {
+    public String getDerivado() {
         
-        return palabra;
+        return derivado;
         
     }
 
@@ -37,9 +37,9 @@ public class Derivado {
         
     }
 
-    public void setPalabra(String palabra) {
+    public void setDerivado(String derivado) {
         
-        this.palabra = palabra;
+        this.derivado = derivado;
         
     }
 
@@ -63,13 +63,20 @@ public class Derivado {
             return false;
         }
         final Derivado other = (Derivado) obj;
-        if (!Objects.equals(this.palabra, other.palabra)) {
+        if (!Objects.equals(this.derivado, other.derivado)) {
             return false;
         }
         if (!Objects.equals(this.vocablo, other.vocablo)) {
             return false;
         }
         return true;
+    }
+    
+    
+    
+    @Override
+    public String toString() {
+        return "\n  " + derivado;
     }
     
     

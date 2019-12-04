@@ -10,10 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import modelo.Acepcion;
 import modelo.Vocablo;
-import modelo.Derivado;
-import modelo.Sinonimo;
 import modelo.Antonimo;
 
 /**
@@ -38,7 +35,9 @@ public class AntonimoControlador {
         
         ArrayList<Antonimo> entradas = new ArrayList<>(5);
         
-        String query = "SELECT * FROM Derivado WHERE vocablo = ?";
+        String query = "SELECT antonimo FROM Antonimos \n"
+                     + "INNER JOIN Vocablo ON Antonimos.vocablo = Vocablo.vocablo \n" 
+                     + "WHERE Vocablo.vocablo = ?";
         
         try {
             
@@ -50,9 +49,7 @@ public class AntonimoControlador {
             
             while (rs.next()){
             
-                entradas.add(new Antonimo(
-                            rs.getString(1),
-                            rs.getString(2)));
+                entradas.add(new Antonimo(rs.getString(1),vocablo));
                 
             }
             
@@ -65,28 +62,34 @@ public class AntonimoControlador {
     }
     
     
-    public void agregar(String palabra, String vocablo){
+    public String agregar(String antonimo, String vocablo){
         
         VocabloControlador vocabloControlador = new VocabloControlador(cnx);
         
         if(vocabloControlador.mostrarVocablos().contains(new Vocablo(vocablo,"", ""))){
             
-            if(this.antonimosVocablo(vocablo).contains(new Antonimo(palabra, vocablo))){
+            if(this.antonimosVocablo(vocablo).contains(new Antonimo(antonimo, vocablo))){
             
+                return "\n El antónimo ya existe";
+                
             } else {
             
-                String query = "INSERT INTO Antonimo (palabra, vocablo) VALUES (?, ?)";
+                String query = "INSERT INTO Antonimos (antonimo, vocablo) VALUES (?, ?)";
         
                 try {
             
                     PreparedStatement pst = cnx.getConexion().prepareStatement(query);
             
-                    pst.setString(1, palabra);
-                    pst.setString(3, vocablo);
+                    pst.setString(1, antonimo);
+                    pst.setString(2, vocablo);
             
                     pst.execute();
+                    
+                    return "\n Antónimo añadido";
             
                 } catch (SQLException ex) {
+                    
+                    return "\n Error. \n No se pudo añadir el antónimo.";
             
                 }
                 
@@ -94,6 +97,50 @@ public class AntonimoControlador {
             
         } else {
         
+            return "El vocablo no existe";
+            
+        }
+ 
+    }
+    
+    
+    public String borrar(String antonimo, String vocablo){
+        
+        VocabloControlador vocabloControlador = new VocabloControlador(cnx);
+        
+        if(vocabloControlador.mostrarVocablos().contains(new Vocablo(vocablo,"", ""))){
+            
+            if(this.antonimosVocablo(vocablo).contains(new Antonimo(antonimo, vocablo))){
+            
+                String query = "DELETE from Antonimos where antonimo = ? and vocablo = ?";
+        
+                try {
+            
+                    PreparedStatement pst = cnx.getConexion().prepareStatement(query);
+            
+                    pst.setString(1, antonimo);
+                    pst.setString(2, vocablo);
+            
+                    pst.execute();
+                
+                    return "\n Antónimo borrado.";
+            
+                } catch (SQLException ex) {
+            
+                    return "\n Error. \n No se pudo borrar el antónimo.";
+                
+                }
+                
+            } else {
+                
+                return "\n El antónimo no existe.";
+                
+            }
+
+        } else {
+        
+            return "\n El vocablo no existe.";
+            
         }
  
     }

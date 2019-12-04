@@ -17,7 +17,7 @@ public class Conexion {
     // Aqui va el usuario con el que nos conectamos a mysql.
     private final String usr = "root";
     // El password correspondiente al usuario.
-    private final String pwd = "";
+    private final String pwd = "Perrita79@";
     // *************************************************************************
     // La base de datos que queremos utilizar.
     private final String db = "Diccionario";

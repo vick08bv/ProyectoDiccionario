@@ -10,11 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import modelo.Acepcion;
 import modelo.Vocablo;
-import modelo.Derivado;
 import modelo.Sinonimo;
-import modelo.Antonimo;
 
 /**
  *
@@ -38,7 +35,9 @@ public class SinonimoControlador {
         
         ArrayList<Sinonimo> entradas = new ArrayList<>(5);
         
-        String query = "SELECT * FROM Derivado WHERE vocablo = ?";
+        String query = "SELECT sinonimo FROM Sinonimos \n"
+                     + "INNER JOIN Vocablo ON Sinonimos.vocablo = Vocablo.vocablo \n" 
+                     + "WHERE Vocablo.vocablo = ?";
         
         try {
             
@@ -51,13 +50,12 @@ public class SinonimoControlador {
             while (rs.next()){
             
                 entradas.add(new Sinonimo(
-                            rs.getString(1),
-                            rs.getString(2)));
+                            rs.getString(1),vocablo));
                 
             }
             
-        } catch (SQLException ex) {
-           
+        } catch (SQLException ex) {           
+            
         }
         
         return entradas;
@@ -65,35 +63,86 @@ public class SinonimoControlador {
     }
     
     
-    public void agregar(String palabra, String vocablo){
+    public String agregar(String sinonimo, String vocablo){
         
         VocabloControlador vocabloControlador = new VocabloControlador(cnx);
         
         if(vocabloControlador.mostrarVocablos().contains(new Vocablo(vocablo, "", ""))){
             
-            if(this.sinonimosVocablo(vocablo).contains(new Sinonimo(palabra, vocablo))){
+            if(this.sinonimosVocablo(vocablo).contains(new Sinonimo(sinonimo, vocablo))){
             
+                return "\n El sinónimo ya existe.";
+                
             } else {
             
-                String query = "INSERT INTO Sinonimo (palabra, vocablo) VALUES (?, ?)";
+                String query = "INSERT INTO Sinonimos (sinonimo, vocablo) VALUES (?, ?)";
         
                 try {
             
                     PreparedStatement pst = cnx.getConexion().prepareStatement(query);
             
-                    pst.setString(1, palabra);
-                    pst.setString(3, vocablo);
+                    pst.setString(1, sinonimo);
+                    pst.setString(2, vocablo);
             
                     pst.execute();
+                    
+                    return "\n Sinónimo añadido";
             
                 } catch (SQLException ex) {
             
+                    System.out.println(ex);
+                    return "\n Error. \n No se pudo añadir el sinónimo";
+                    
                 }
                 
             }
             
+        } else {            
+            
+            return "\n El vocablo no existe."; 
+        
+        }
+ 
+    }
+    
+    
+    public String borrar(String sinonimo, String vocablo){
+        
+        VocabloControlador vocabloControlador = new VocabloControlador(cnx);
+        
+        if(vocabloControlador.mostrarVocablos().contains(new Vocablo(vocablo,"", ""))){
+            
+            if(this.sinonimosVocablo(vocablo).contains(new Sinonimo(sinonimo, vocablo))){
+            
+                String query = "DELETE from Sinonimos where sinonimo = ? and vocablo = ?";
+        
+                try {
+            
+                    PreparedStatement pst = cnx.getConexion().prepareStatement(query);
+            
+                    pst.setString(1, sinonimo);                 
+                    pst.setString(2, vocablo);
+            
+                    pst.execute();
+                
+                    return "\n Sinónimo borrado.";
+            
+                } catch (SQLException ex) {
+            
+                    return "\n Error. \n No se pudo borrar el sinónimo.";
+                
+                }
+                
+            } else {
+                
+                return "\n El sinónimo no existe.";
+                
+            }
+
         } else {
         
+            return "\n El vocablo no existe.";
+            
         }
  
     }

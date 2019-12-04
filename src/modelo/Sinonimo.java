@@ -13,20 +13,20 @@ import java.util.Objects;
  */
 public class Sinonimo {
     
-    private String palabra;
+    private String sinonimo;
     private String vocablo;
 
     
     public Sinonimo(String palabra, String vocablo) {
         
-        this.palabra = palabra;
+        this.sinonimo = palabra;
         this.vocablo = vocablo;
         
     }
 
-    public String getPalabra() {
+    public String getSinonimo() {
         
-        return palabra;
+        return sinonimo;
         
     }
 
@@ -37,9 +37,9 @@ public class Sinonimo {
         
     }
 
-    public void setPalabra(String palabra) {
+    public void setSinonimo(String sinonimo) {
         
-        this.palabra = palabra;
+        this.sinonimo = sinonimo;
         
     }
 
@@ -63,13 +63,19 @@ public class Sinonimo {
             return false;
         }
         final Sinonimo other = (Sinonimo) obj;
-        if (!Objects.equals(this.palabra, other.palabra)) {
+        if (!Objects.equals(this.sinonimo, other.sinonimo)) {
             return false;
         }
         if (!Objects.equals(this.vocablo, other.vocablo)) {
             return false;
         }
         return true;
+    }
+    
+    
+    @Override
+    public String toString() {
+        return "\n  " + sinonimo;
     }
    
     
