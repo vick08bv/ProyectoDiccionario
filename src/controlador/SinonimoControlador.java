@@ -1,21 +1,18 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controlador;
 
+
 import conexion.Conexion;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+
 import modelo.Vocablo;
 import modelo.Sinonimo;
 
+import java.util.ArrayList;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+
 /**
- *
- * @author vick0
+ * Controlador para los sinónimos.
  */
 public class SinonimoControlador {
     
@@ -23,7 +20,7 @@ public class SinonimoControlador {
 
     /**
      * Constructor.
-     * @param cnx - La conexion establecida.
+     * @param cnx
      */
     public SinonimoControlador(Conexion cnx) {
         
@@ -31,6 +28,12 @@ public class SinonimoControlador {
     
     }
     
+    
+    /**
+     * Regresa los sinónimos de un vocablo dado. 
+     * @param vocablo Vocablo buscado.
+     * @return Lista con sinónimos.
+     */
     public ArrayList<Sinonimo> sinonimosVocablo(String vocablo) {       
         
         ArrayList<Sinonimo> entradas = new ArrayList<>(5);
@@ -41,17 +44,13 @@ public class SinonimoControlador {
         
         try {
             
-            PreparedStatement pst = cnx.getConexion().prepareStatement(query);
-            
-            pst.setString(1, vocablo);
-            
+            PreparedStatement pst = cnx.getConexion().prepareStatement(query);            
+            pst.setString(1, vocablo);            
             ResultSet rs = pst.executeQuery();
             
-            while (rs.next()){
-            
+            while (rs.next()){            
                 entradas.add(new Sinonimo(
-                            rs.getString(1),vocablo));
-                
+                            rs.getString(1),vocablo));                
             }
             
         } catch (SQLException ex) {           
@@ -63,16 +62,22 @@ public class SinonimoControlador {
     }
     
     
+    /**
+     * Agrega un sinónimo al vocablo dado.
+     * @param sinonimo Sinónimo del vocablo.
+     * @param vocablo Vocablo dado.
+     * @return Resultado de la operación.
+     */
     public String agregar(String sinonimo, String vocablo){
         
         VocabloControlador vocabloControlador = new VocabloControlador(cnx);
         
+        // Si el vocablo está en el diccionario, se le agrega el sinónimo.
+        
         if(vocabloControlador.mostrarVocablos().contains(new Vocablo(vocablo, "", ""))){
             
             if(this.sinonimosVocablo(vocablo).contains(new Sinonimo(sinonimo, vocablo))){
-            
                 return "\n El sinónimo ya existe.";
-                
             } else {
             
                 String query = "INSERT INTO Sinonimos (sinonimo, vocablo) VALUES (?, ?)";
@@ -89,26 +94,30 @@ public class SinonimoControlador {
                     return "\n Sinónimo añadido";
             
                 } catch (SQLException ex) {
-            
-                    System.out.println(ex);
-                    return "\n Error. \n No se pudo añadir el sinónimo";
-                    
+                    return "\n Error. \n No se pudo añadir el sinónimo";                    
                 }
                 
             }
             
-        } else {            
-            
-            return "\n El vocablo no existe."; 
-        
+        } else {                       
+            return "\n El vocablo no existe.";         
         }
  
     }
     
     
+    /**
+     * Borra el sinónimo del vocablo dado.
+     * @param sinonimo Sinónimo por borrar.
+     * @param vocablo Vocablo dado.
+     * @return Resultado de la operación.
+     */
     public String borrar(String sinonimo, String vocablo){
         
         VocabloControlador vocabloControlador = new VocabloControlador(cnx);
+        
+        // Si el vocablo está en el diccionario y 
+        // posee el sinónimo indicado, se le quita.
         
         if(vocabloControlador.mostrarVocablos().contains(new Vocablo(vocablo,"", ""))){
             
@@ -128,21 +137,15 @@ public class SinonimoControlador {
                     return "\n Sinónimo borrado.";
             
                 } catch (SQLException ex) {
-            
                     return "\n Error. \n No se pudo borrar el sinónimo.";
-                
                 }
                 
             } else {
-                
                 return "\n El sinónimo no existe.";
-                
             }
 
         } else {
-        
-            return "\n El vocablo no existe.";
-            
+            return "\n El vocablo no existe.";            
         }
  
     }

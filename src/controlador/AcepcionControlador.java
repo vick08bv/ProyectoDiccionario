@@ -22,6 +22,7 @@ public class AcepcionControlador {
 
     
     /**
+     * Constructor
      * @param cnx.
      */
     public AcepcionControlador(Conexion cnx) {
@@ -31,6 +32,10 @@ public class AcepcionControlador {
     }
     
     
+    /**
+     * Muestra todas las acepciones existentes en el diccionario.
+     * @return Lista con las acepciones.
+     */
     public ArrayList<Acepcion> mostrarAcepciones() {
         
         ArrayList<Acepcion> entradas = new ArrayList<>(25);
@@ -40,15 +45,10 @@ public class AcepcionControlador {
         try {
             
             PreparedStatement pst = cnx.getConexion().prepareStatement(query);
-            
             ResultSet rs = pst.executeQuery();
             
             while (rs.next()){
-            
-                entradas.add(new Acepcion(
-                            rs.getString(1),
-                            rs.getString(2)));
-                
+                entradas.add(new Acepcion(rs.getString(1), rs.getString(2))); 
             }
             
         } catch (SQLException ex) {
@@ -60,6 +60,11 @@ public class AcepcionControlador {
     }
     
     
+    /**
+     * Devuelve las acepciones del vocablo dado.
+     * @param vocablo Vocablo a buscar.
+     * @return Acepciones.
+     */
     public ArrayList<Acepcion> acepcionesVocablo(String vocablo) {       
         
         ArrayList<Acepcion> entradas = new ArrayList<>(5);
@@ -70,16 +75,13 @@ public class AcepcionControlador {
         
         try {
             
-            PreparedStatement pst = cnx.getConexion().prepareStatement(query);
-            
+            PreparedStatement pst = cnx.getConexion().prepareStatement(query);           
             pst.setString(1, vocablo);
             
             ResultSet rs = pst.executeQuery();
             
-            while (rs.next()){
-            
-                entradas.add(new Acepcion(rs.getString(1), rs.getString(2)));
-                
+            while (rs.next()){           
+                entradas.add(new Acepcion(rs.getString(1), rs.getString(2)));                
             }
             
         } catch (SQLException ex) {
@@ -91,13 +93,27 @@ public class AcepcionControlador {
     }
     
 
+    /**
+     * Agrega una nueva acepción para el vocablo dado.
+     * @param acepcion Acepción.
+     * @param ejemplo Un ejemplo para la acepción.
+     * @param vocablo Vocablo al que se le agrega la acepción.
+     * @return Resultado de la operación.
+     */
     public String agregar(String acepcion, String ejemplo, String vocablo){
         
         VocabloControlador vocabloControlador = new VocabloControlador(cnx);
         
-        if(!this.mostrarAcepciones().contains(new Acepcion(acepcion, ejemplo))){
+        // Si el vocablo no existe en la base de datos, no se agrega nada.
+        
+        if(vocabloControlador.mostrarVocablos().contains(new Vocablo(vocablo, "", ""))){
             
-            String query = "INSERT INTO Acepcion (acepcion, ejemplo) VALUES (?, ?)";
+            // Se agrega la acepción a la base de datos, para 
+            // posteriormente, relacionarla con el vocablo.
+         
+            if(!this.mostrarAcepciones().contains(new Acepcion(acepcion, ""))){
+            
+                String query = "INSERT INTO Acepcion (acepcion, ejemplo) VALUES (?, ?)";
         
                 try {
             
@@ -109,19 +125,16 @@ public class AcepcionControlador {
                     pst.execute();
             
                 } catch (SQLException ex) {
-                    
-                    return "\n Error. \n No se pudo añadir la acepción.";
-            
+                    return "\n Error. \n No se pudo añadir la acepción.";            
                 }
                 
-        }
-        
-        if(vocabloControlador.mostrarVocablos().contains(new Vocablo(vocablo, "", ""))){
+            }
             
-            if(this.acepcionesVocablo(vocablo).contains(new Acepcion(acepcion, ejemplo))){
+            // Si la el vocablo ya cuenta con la acepción, no se hace nada.
+            // Si no, se le agrega.
             
-                return "\n La acepción ya existe.";
-                
+            if(this.acepcionesVocablo(vocablo).contains(new Acepcion(acepcion, ejemplo))){            
+                return "\n La acepción ya existe.";    
             } else {
             
                 String query = "INSERT INTO Acepciones (acepcion, vocablo) VALUES (?, ?)";
@@ -137,26 +150,31 @@ public class AcepcionControlador {
                     
                     return "\n Acepción añadida.";
             
-                } catch (SQLException ex) {
-                    
-                    return "\n Error. \n No se pudo añadir la acepción.";
-            
+                } catch (SQLException ex) {                    
+                    return "\n Error. \n No se pudo añadir la acepción.";            
                 }
                 
             }
             
-        } else {
-        
-            return "\n El vocablo no existe.";
-            
+        } else {       
+            return "\n El vocablo no existe.";            
         }
  
     }
     
     
+    /**
+     * Edita el ejemplo de una acepción.
+     * @param acepcion Acepción que se va a editar.
+     * @param ejemplo Nuevo ejemplo para la acepción.
+     * @return Resultado de la operación.
+     */
     public String editar(String acepcion, String ejemplo){
             
-        if(this.mostrarAcepciones().contains(new Acepcion(acepcion, ejemplo))){
+        // Si la acepción está en la base de datos, 
+        // se procede a editarla.
+        
+        if(this.mostrarAcepciones().contains(new Acepcion(acepcion, ""))){
             
             String query = "UPDATE Acepcion SET ejemplo = ? where acepcion = ?";
         
@@ -170,24 +188,28 @@ public class AcepcionControlador {
                     
                 return "\n Acepción editada.";
             
-            } catch (SQLException ex) {
-                    
-                return "\n Error. \n No se pudo editar la acepción.";
-            
+            } catch (SQLException ex) {                   
+                return "\n Error. \n No se pudo editar la acepción.";            
             }
                 
-        } else {
-                
-            return "\n La acepción no existe";
-        
+        } else {               
+            return "\n La acepción no existe";       
         }
  
     }
     
     
+    /**
+     * Borra una acepción para un vocablo dado.
+     * @param acepcion Acepción que se remueve del vocablo.
+     * @param vocablo Vocablo indicado.
+     * @return Resultado de la operación.
+     */
     public String borrar(String acepcion, String vocablo){
         
         VocabloControlador vocabloControlador = new VocabloControlador(cnx);
+        
+        // Si el vocablo existe y posee la acepción, se le quita. 
         
         if(vocabloControlador.mostrarVocablos().contains(new Vocablo(vocablo,"", ""))){
             
@@ -204,11 +226,12 @@ public class AcepcionControlador {
             
                     pst.execute();
             
-                } catch (SQLException ex) {
-            
-                    return "\n Error. \n No se pudo borrar la acepción.";
-                
+                } catch (SQLException ex) {            
+                    return "\n Error. \n No se pudo borrar la acepción.";                
                 }
+                
+                // Cuando ningún vocablo posee la acepción 
+                // en la base de datos, esta se elimina.
                 
                 ArrayList<String> vocablos_asociados = new ArrayList<>();
                 
@@ -216,24 +239,17 @@ public class AcepcionControlador {
         
                 try {
             
-                    PreparedStatement pst = cnx.getConexion().prepareStatement(query);
-            
-                    pst.setString(1, acepcion);
-            
+                    PreparedStatement pst = cnx.getConexion().prepareStatement(query);            
+                    pst.setString(1, acepcion);      
                     pst.execute();
                     
-                    ResultSet rs = pst.executeQuery();
-                    
-                    while (rs.next()){
-            
-                        vocablos_asociados.add(rs.getString(1));
-                
+                    ResultSet rs = pst.executeQuery();                    
+                    while (rs.next()){            
+                        vocablos_asociados.add(rs.getString(1));                
                     }
             
-                } catch (SQLException ex) {
-            
-                    return "\n  Acepción borrada.";
-                
+                } catch (SQLException ex) {           
+                    return "\n  Acepción borrada.";               
                 }
                 
                 if(vocablos_asociados.isEmpty()){
@@ -242,32 +258,24 @@ public class AcepcionControlador {
         
                     try {
             
-                        PreparedStatement pst = cnx.getConexion().prepareStatement(query);
-            
-                        pst.setString(1, acepcion);
-            
+                        PreparedStatement pst = cnx.getConexion().prepareStatement(query);            
+                        pst.setString(1, acepcion);   
                         pst.execute();
             
-                    } catch (SQLException ex) {
-            
-                        return "\n  Acepción borrada.";
-                
+                    } catch (SQLException ex) {            
+                        return "\n  Acepción borrada.";                
                     }
                 
                 } 
                 
-                return "\n  Acepción borrada.";
+                return "\n  Acepción borrada del diccionario.";
                 
-            } else {
-                
-                return "\n La acepción no existe.";
-                
+            } else {                
+                return "\n El vocablo no contiene la acepción.";                
             }
 
         } else {
-        
-            return "\n El vocablo no existe.";
-            
+            return "\n El vocablo no existe.";         
         }
  
     }
