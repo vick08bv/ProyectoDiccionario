@@ -4,16 +4,12 @@ import conexion.Conexion;
 
 import modelo.Vocablo;
 import modelo.Acepcion;
-import modelo.Sinonimo;
-import modelo.Antonimo;
-import modelo.Derivado;
+import modelo.Relacionado;
 
 import controlador.VocabloControlador;
 import controlador.AcepcionControlador;
-import controlador.SinonimoControlador;
-import controlador.AntonimoControlador;
-import controlador.DerivadoControlador;
 import controlador.ConsultaControlador;
+import controlador.RelacionadoControlador;
 
 import java.util.ArrayList;
 import java.sql.ResultSet;
@@ -30,25 +26,33 @@ import javax.swing.table.DefaultTableModel;
  */
 public class vistaDiccionario extends javax.swing.JFrame {
     
-    private final String usuario = "root";
-    private final String contrasena = "Perrita79@";
+    private final String usuario;
+    private final String contrasena;
     
-    private boolean admin = false;
+    private boolean admin;
     
-    private Conexion cnx = new Conexion();
+    private final Conexion cnx;
     
-    private VocabloControlador vbc = new VocabloControlador(cnx);
-    private AcepcionControlador apc = new AcepcionControlador(cnx);
-    private AntonimoControlador anc = new AntonimoControlador(cnx);
-    private SinonimoControlador snc = new SinonimoControlador(cnx);
-    private DerivadoControlador drc = new DerivadoControlador(cnx);
-    private ConsultaControlador ccc = new ConsultaControlador(cnx);
+    private final VocabloControlador vbc;
+    private final AcepcionControlador apc;
+    private final RelacionadoControlador rcc;
+    private final ConsultaControlador ccc;
     
     
     /**
      * Nueva interfaz.
      */
     public vistaDiccionario() {
+
+        usuario = "root";
+        contrasena = "root";
+    
+        cnx = new Conexion();
+    
+        vbc = new VocabloControlador(cnx);
+        apc = new AcepcionControlador(cnx);
+        rcc = new RelacionadoControlador(cnx);
+        ccc = new ConsultaControlador(cnx);
         
         initComponents();
         cnx.conectar();
@@ -58,24 +62,92 @@ public class vistaDiccionario extends javax.swing.JFrame {
         
         //Ventana de inicio de sesión.
         
-        ingreso.setTitle("Iniciar sesión");
+        ingreso.setTitle("Inicia sesión");
         ingreso.setLocationRelativeTo(null);
-        ingreso.setSize(245, 200);
+        ingreso.setSize(245, 190);
         
         //Ventana con la lista completa de vocablos.
         
-        mostrarVocablos.setTitle("Búsqueda de vocablos");
+        mostrarVocablos.setTitle("Búsqueda");
         mostrarVocablos.setLocation(300,150);
         mostrarVocablos.setSize(245, 240);
+        
+        panelAyuda.setTitle("Ayuda");
+        panelAyuda.setLocation(375,145);
+        panelAyuda.setSize(350, 250);
         
         // Se desactivan los componentes usados para
         // el manejo del diccionario por parte 
         // del administrador hasta que inicie sesión.    
         
+        panel1.setEnabled(false);
+        panel2.setEnabled(false);
+        panel3.setEnabled(false);
+        
+        edicion.setEnabled(false);
+        edicionVocablo.setEnabled(false);
+        etiquetaVocablo.setEnabled(false);
+        edicionAcepcion.setEnabled(false);
+        etiquetaAcepcion.setEnabled(false);
+        edicionEjemplo.setEnabled(false);
+        etiquetaEjemplo.setEnabled(false);
+        edicionRelacionada.setEnabled(false);
+        etiquetaRelacionada.setEnabled(false);
+        edicionExplicacion.setEnabled(false);
+        etiquetaExplicacion.setEnabled(false);
+        edicionEjemploVocablo.setEnabled(false);
+        etiquetaEjemploVocablo.setEnabled(false);
+        etiquetaEditar.setEnabled(false);
+        limpiarEdicion.setEnabled(false);
+        ayuda.setEnabled(false);
+        
+        listaCategorias.setEnabled(false);
+        listaRelacionadas.setEnabled(false);
+        esSoez.setEnabled(false);
+        
+        agregarVocablo.setEnabled(false);
+        editarVocablo.setEnabled(false);
+        borrarVocablo.setEnabled(false);
+        agregarAcepcion.setEnabled(false);
+        borrarAcepcion.setEnabled(false);
+        agregarRelacionada.setEnabled(false);
+        borrarRelacionada.setEnabled(false);
+        
+        acciones.setEnabled(false);
+        mensaje.setEnabled(false);
+        
+        panel4.setEnabled(false);
+        panelMostrarVocablos.setEnabled(false);
+        mostrarVocablo.setEnabled(false);
+        mostrarVocablos.setEnabled(false);
+        listaVocablosTodo.setEnabled(false);
+        anuncioListaVocablos.setEnabled(false);
+        
+        buscarTodo.setEnabled(false);
+        refrescarVocablos.setEnabled(false);
+        
+        panel5.setEnabled(false);
+        panel6.setEnabled(false);
+        panel7.setEnabled(false);
+        
+        especial.setEnabled(false);
+        consultaTexto.setEnabled(false);
+        consultaEspecial.setEnabled(false);
+        informacion.setEnabled(false);
+        tabla.setEnabled(false);
+
+    }
+    
+    
+    /**
+     * Activa o descativa las características del diccionario.
+     */
+    private void activar(boolean admin){
+        
         panel1.setEnabled(admin);
         panel2.setEnabled(admin);
         panel3.setEnabled(admin);
-        
+
         edicion.setEnabled(admin);
         edicionVocablo.setEnabled(admin);
         etiquetaVocablo.setEnabled(admin);
@@ -85,119 +157,181 @@ public class vistaDiccionario extends javax.swing.JFrame {
         etiquetaEjemplo.setEnabled(admin);
         edicionRelacionada.setEnabled(admin);
         etiquetaRelacionada.setEnabled(admin);
-        
+        edicionExplicacion.setEnabled(admin);
+        etiquetaExplicacion.setEnabled(admin);
+        edicionEjemploVocablo.setEnabled(admin);
+        etiquetaEjemploVocablo.setEnabled(admin);
+        etiquetaEditar.setEnabled(admin);
+        limpiarEdicion.setEnabled(admin);
+        ayuda.setEnabled(admin);
+
         listaCategorias.setEnabled(admin);
         listaRelacionadas.setEnabled(admin);
         esSoez.setEnabled(admin);
-        
+
         agregarVocablo.setEnabled(admin);
         editarVocablo.setEnabled(admin);
         borrarVocablo.setEnabled(admin);
-        agregarAcepción.setEnabled(admin);
-        editarAcepción.setEnabled(admin);
-        borrarAcepción.setEnabled(admin);
+        agregarAcepcion.setEnabled(admin);
+        borrarAcepcion.setEnabled(admin);
         agregarRelacionada.setEnabled(admin);
         borrarRelacionada.setEnabled(admin);
-        
+
         acciones.setEnabled(admin);
         mensaje.setEnabled(admin);
-        
+
         panel4.setEnabled(admin);
+
         panelMostrarVocablos.setEnabled(admin);
         mostrarVocablo.setEnabled(admin);
         mostrarVocablos.setEnabled(admin);
         listaVocablosTodo.setEnabled(admin);
         anuncioListaVocablos.setEnabled(admin);
-        
+
         buscarTodo.setEnabled(admin);
         refrescarVocablos.setEnabled(admin);
-        
+
         panel5.setEnabled(admin);
         panel6.setEnabled(admin);
         panel7.setEnabled(admin);
-        
+
         especial.setEnabled(admin);
         consultaTexto.setEnabled(admin);
         consultaEspecial.setEnabled(admin);
         informacion.setEnabled(admin);
         tabla.setEnabled(admin);
-        
+ 
     }
     
     
     /**
-     * Búsqueda de toda la información de un vocablo.
-     * @param vocablo Vocablo a buscar.
+     * Limpia la ventana.
+     * @param v Ventana a limpiar. 
      */
-    private void buscar(String vocablo){
+    public void limpiar(boolean v){
+    
+        if(v){
+            
+            //Limpia la primera ventana.
+            
+            edicionVocablo1.setText("");
+            ejemploUso.setText("");
+            sinonimosVocablo.setText("");
+            antonimosVocablo.setText("");
+            derivadosVocablo.setText("");
+            indicaCategoria.setText("");
+            indicaSoez.setText("");
+            acepcionesVocablo.setText("");
+            etiquetaVocablo1.setText("Vocablo");
         
-        if(vocablo.replace(" ", "").equals("")){
-                
-                acepcionesVocablo.setText("");
-                sinonimosVocablo.setText("");
-                antonimosVocablo.setText("");
-                derivadosVocablo.setText("");
-                indicaCategoria.setText("");
-                indicaSoez.setText("Vocablo soez");
-                
         } else {
+            
+            //Limpia la segunda ventana.
         
-            ArrayList<Vocablo> vocablos = vbc.mostrarVocablos();
-            Vocablo u = new Vocablo(vocablo, "", "");
+            edicionVocablo.setText("");
+            edicionAcepcion.setText("");
+            edicionRelacionada.setText("");
+            edicionExplicacion.setText("");
+            edicionEjemplo.setText("");
+            edicionEjemploVocablo.setText("");
+            esSoez.setSelected(false);
+            listaCategorias.setSelectedValue(null, false);
+            listaRelacionadas.setSelectedValue(null, false);
         
-            // Si el vocablo se encuentra en el diccionario,
-            // se procede a buscar toda su información.
+        }
+    
+    }
+    
+    /**
+     * Búsqueda de toda la información de un vocablo.
+     * @param v Vocablo a buscar.
+     */
+    private void buscar(String v){
         
-            if(vocablos.contains(u)){
+        // Si el vocablo se encuentra en el diccionario,
+        // se procede a buscar toda su información.
+        
+        ArrayList<Vocablo> vocablos = vbc.mostrarVocablos();
+        Vocablo u = new Vocablo(v, null, false, null);
+        
+        if(vocablos.contains(u)){
             
-                ArrayList<Acepcion> acepcionesv = apc.acepcionesVocablo(vocablo);    
-                ArrayList<Sinonimo> sinonimosv = snc.sinonimosVocablo(vocablo);
-                ArrayList<Antonimo> antonimosv = anc.antonimosVocablo(vocablo);
-                ArrayList<Derivado> derivadosv = drc.derivadosVocablo(vocablo);
-             
-                String acepciones = ""; String derivados = "";
-                String sinonimos = ""; String antonimos = "";
+            ArrayList<Relacionado> relacionadosv = rcc.relacionadosVocablo(v);
+            ArrayList<String> acepcionesv = apc.acepcionesVocablo(v);            
+            ArrayList<Acepcion> acepcionesEjemplos = new ArrayList<>();
+            ArrayList<Acepcion> acepcionesEjemplosv = new ArrayList<>();
+
+            // Todas las acepciones del vocablo se agregan en una misma lista.
             
-                for(Acepcion acepcion: acepcionesv){           
-                    acepciones += acepcion.toString();           
-                }
-            
-                for(Sinonimo sinonimo: sinonimosv){            
-                    sinonimos += sinonimo.toString();           
-                }
-            
-                for(Antonimo antonimo: antonimosv){           
-                    antonimos += antonimo.toString();           
-                }
-            
-                for(Derivado derivado: derivadosv){            
-                    derivados += derivado.toString();            
-                }
-            
-                // Se plasma la información obtenida, 
-                // en la interfaz.
-            
-                acepcionesVocablo.setText(acepciones);
-                sinonimosVocablo.setText(sinonimos);
-                antonimosVocablo.setText(antonimos);
-                derivadosVocablo.setText(derivados);
-            
-                Vocablo v = vocablos.get(vocablos.indexOf(u));
-            
-                indicaCategoria.setText(v.getCategoria());
-            
-                if(u.isEs_soez().equals("si")){            
-                    indicaSoez.setText("Vocablo soez");                
-                } else {                
-                    indicaSoez.setText("Vocablo no soez");            
-                }
-            
-            } else {
+            for(String acepcionv: acepcionesv){
                 
-                edicionVocablo1.setText("El vocablo no existe");
+                acepcionesEjemplosv = apc.ejemplosAcepcion(v, acepcionv);
+                
+                for(Acepcion acepcion: acepcionesEjemplosv){
+                    acepcionesEjemplos.add(acepcion);
+                }
                 
             }
-    
+            
+            String acepciones = ""; String derivados = "";
+            String sinonimos = ""; String antonimos = "";
+            
+            for(Acepcion acepcion: acepcionesEjemplos){           
+                acepciones += acepcion.toString();           
+            }
+            
+            // Las palabras relacionadas se separan según
+            // su tipo de relación con el vocablo.
+            
+            for(Relacionado relacionado: relacionadosv){
+                
+                switch(relacionado.getTipo()){
+                    
+                    case "Sinónimo":
+                       sinonimos += relacionado.toString(); 
+                       break;
+                    case "Antónimo":
+                        antonimos += relacionado.toString();
+                        break;
+                    default:
+                        derivados += relacionado.toString();
+                        break;
+                }       
+                
+            }
+            
+            // Se plasma la información obtenida, 
+            // en la interfaz.
+            
+            acepcionesVocablo.setText(acepciones);
+            sinonimosVocablo.setText(sinonimos);
+            antonimosVocablo.setText(antonimos);
+            derivadosVocablo.setText(derivados);
+            
+            Vocablo vocablo = vocablos.get(vocablos.indexOf(u));
+            
+            indicaCategoria.setText(vocablo.getCategoria());
+            
+            if(vocablo.isEs_soez()){            
+                indicaSoez.setText("Vocablo soez");                
+            } else {                
+                indicaSoez.setText("Vocablo no soez");            
+            }
+            
+            ejemploUso.setText(vocablo.getEjemplo());
+            edicionVocablo1.setText(v);
+            etiquetaVocablo1.setText("Vocablo");
+                
+        } else {
+                
+            if(v.replace(" ","").equals("")){
+                limpiar(true);
+                etiquetaVocablo1.setText("Ingresa un vocablo");
+            } else {
+                limpiar(true);
+                edicionVocablo1.setText(v);
+                etiquetaVocablo1.setText("El vocablo no existe");
+            }
         }
             
     }
@@ -221,6 +355,10 @@ public class vistaDiccionario extends javax.swing.JFrame {
         anuncioListaVocablos = new javax.swing.JTextField();
         panel4 = new javax.swing.JScrollPane();
         listaVocablosTodo = new javax.swing.JList<>();
+        panelAyuda = new javax.swing.JFrame();
+        panel8 = new javax.swing.JPanel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        ayudaInfo = new javax.swing.JTextArea();
         principal = new javax.swing.JPanel();
         ventanas = new javax.swing.JTabbedPane();
         consulta = new javax.swing.JPanel();
@@ -240,14 +378,17 @@ public class vistaDiccionario extends javax.swing.JFrame {
         loginAdmin = new javax.swing.JButton();
         logoutAdmin = new javax.swing.JButton();
         salir = new javax.swing.JButton();
-        jScrollPane7 = new javax.swing.JScrollPane();
-        bienvenida = new javax.swing.JTextArea();
         jScrollPane8 = new javax.swing.JScrollPane();
         acepcionesVocablo = new javax.swing.JTextArea();
         acepcionesEjemplos = new javax.swing.JTextField();
-        indicaSoez = new javax.swing.JTextField();
         indicaCategoria = new javax.swing.JTextField();
+        indicaSoez = new javax.swing.JTextField();
         buscarTodo = new javax.swing.JButton();
+        bienvenida = new javax.swing.JTextField();
+        ejemploUso = new javax.swing.JTextField();
+        limpiaInfoVocablos = new javax.swing.JButton();
+        etiquetaInformacion = new javax.swing.JTextField();
+        etiquetaEjemploUso = new javax.swing.JTextField();
         edicion = new javax.swing.JPanel();
         edicionVocablo = new javax.swing.JTextField();
         etiquetaVocablo = new javax.swing.JTextField();
@@ -267,12 +408,18 @@ public class vistaDiccionario extends javax.swing.JFrame {
         etiquetaAcepcion = new javax.swing.JTextField();
         etiquetaEjemplo = new javax.swing.JTextField();
         edicionEjemplo = new javax.swing.JTextField();
-        agregarAcepción = new javax.swing.JButton();
-        editarAcepción = new javax.swing.JButton();
-        borrarAcepción = new javax.swing.JButton();
+        agregarAcepcion = new javax.swing.JButton();
+        borrarAcepcion = new javax.swing.JButton();
         acciones = new javax.swing.JTextField();
         panel3 = new javax.swing.JScrollPane();
         mensaje = new javax.swing.JTextArea();
+        edicionExplicacion = new javax.swing.JTextField();
+        etiquetaExplicacion = new javax.swing.JTextField();
+        edicionEjemploVocablo = new javax.swing.JTextField();
+        etiquetaEjemploVocablo = new javax.swing.JTextField();
+        etiquetaEditar = new javax.swing.JTextField();
+        limpiarEdicion = new javax.swing.JButton();
+        ayuda = new javax.swing.JButton();
         especial = new javax.swing.JPanel();
         panel5 = new javax.swing.JScrollPane();
         tabla = new javax.swing.JTable();
@@ -415,9 +562,9 @@ public class vistaDiccionario extends javax.swing.JFrame {
             public String getElementAt(int i) { return strings[i]; }
         });
         listaVocablosTodo.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        listaVocablosTodo.setMaximumSize(new java.awt.Dimension(200, 400));
+        listaVocablosTodo.setMaximumSize(new java.awt.Dimension(200, 2000));
         listaVocablosTodo.setMinimumSize(new java.awt.Dimension(105, 170));
-        listaVocablosTodo.setPreferredSize(new java.awt.Dimension(100, 170));
+        listaVocablosTodo.setPreferredSize(new java.awt.Dimension(100, 1000));
         panel4.setViewportView(listaVocablosTodo);
 
         javax.swing.GroupLayout panelMostrarVocablosLayout = new javax.swing.GroupLayout(panelMostrarVocablos);
@@ -462,6 +609,46 @@ public class vistaDiccionario extends javax.swing.JFrame {
                 .addComponent(panelMostrarVocablos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
+        panelAyuda.setResizable(false);
+
+        ayudaInfo.setEditable(false);
+        ayudaInfo.setBackground(new java.awt.Color(245, 245, 255));
+        ayudaInfo.setFont(new java.awt.Font("Verdana", 1, 11)); // NOI18N
+        ayudaInfo.setForeground(new java.awt.Color(102, 102, 255));
+        ayudaInfo.setRows(5);
+        ayudaInfo.setText("\n   Ayuda (Panel de edición del diccionario)\n\n-------------------------------------------------\n                      ¿Cómo funciona? \n------------------------------------------------- \n\n - Vocablos:\n\n  - Agregar: \n\n    Añade un vocablo al diccionario, con \n    la categoría gramatical seleccionada,\n    indicando si es un término soez o no\n    (de acuerdo al estado del botón), y\n    un ejemplo de su uso \n\n    (No añade ejemplo si se escribe un\n    ejemplo vacío o se escribe \"null\").\n  \n  - Editar:\n\n    Edita el vocablo indicado \n    (si es que hay escrito alguno), \n    con la nueva categoría gramatical\n    e indicando si es soez o no.\n    Edita el ejemplo si se escribió alguno\n    y lo elimina si se ecribe \"null\".\n\n  - Borrar:\n\n    Borra el vocablo que esté escrito \n    y por el diseño del diccionario,\n    toda sun infromación relacionada.\n\n-------------------------------------------------\n\n - Palabras relacionadas:\n\n  - Agregar:\n\n    Le añade una palabra relacionada al\n    vocablo indicado, de acuerdo al tipo \n    de relación con el vocablo: \n    sinónimo, antónimo o palabra derivada.\n    \n   *Agrega la palabra a la base de datos \n    antes de relacionarla con el vocablo.\n\n  - Borrar:\n\n    Borra el registro de relación entre la\n    palabra y el vocablo indicados.\n    (Sólo borra el tipo de relación marcado).\n\n   *Borra la palabra del diccionario cuando\n    ningún vocablo está relacionado con ella.\n\n-------------------------------------------------\n\n - Acepciones:\n\n  - Agregar:\n\n    Añade una acepción al vocablo indicado.\n    Se le agrega el ejemplo y la explicacion\n    deseados, si los hay.\n    (Si hay alguna explicacion pero no un \n    ejemplo, no agrega nada). \n\n   *Agrega la acepción al diccionario antes \n    de atribuirla a tal vocablo.\n   *Esta opción sólo permite un registro\n    por acecpión y vocablo. \n\n  - Borrar:\n\n    Borra una acepción para el vocablo \n    indicado.\n\n   *Esto borra todos los ejemplos y \n    explicaciones de la acepción para\n    el vocablo dado.\n\n-------------------------------------------------\n\n - Notas:\n\n  - Para agregar varias explicaciones \n    para un mismo ejemplo, o varios\n    ejemplos para una acepción y un\n    vocablo, es necesario realizarlo \n    a través de las consultas especiales.\n\n  - No hay restricción sobre lo que es \n    posible realizar en las consultas\n    especiales. \n");
+        jScrollPane7.setViewportView(ayudaInfo);
+
+        javax.swing.GroupLayout panel8Layout = new javax.swing.GroupLayout(panel8);
+        panel8.setLayout(panel8Layout);
+        panel8Layout.setHorizontalGroup(
+            panel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        panel8Layout.setVerticalGroup(
+            panel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        javax.swing.GroupLayout panelAyudaLayout = new javax.swing.GroupLayout(panelAyuda.getContentPane());
+        panelAyuda.getContentPane().setLayout(panelAyudaLayout);
+        panelAyudaLayout.setHorizontalGroup(
+            panelAyudaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(panel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        panelAyudaLayout.setVerticalGroup(
+            panelAyudaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelAyudaLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(panel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         consulta.setForeground(new java.awt.Color(153, 204, 255));
@@ -476,14 +663,13 @@ public class vistaDiccionario extends javax.swing.JFrame {
         etiquetaVocablo1.setPreferredSize(new java.awt.Dimension(80, 30));
 
         edicionVocablo1.setBackground(new java.awt.Color(245, 245, 255));
-        edicionVocablo1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         edicionVocablo1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         edicionVocablo1.setPreferredSize(new java.awt.Dimension(80, 30));
 
         buscar.setBackground(new java.awt.Color(245, 245, 255));
-        buscar.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
-        buscar.setForeground(new java.awt.Color(0, 0, 204));
-        buscar.setText("Buscar");
+        buscar.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        buscar.setForeground(new java.awt.Color(0, 51, 153));
+        buscar.setText("Buscar vocablo");
         buscar.setBorderPainted(false);
         buscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -518,21 +704,21 @@ public class vistaDiccionario extends javax.swing.JFrame {
         sinonimosVocablo.setEditable(false);
         sinonimosVocablo.setBackground(new java.awt.Color(245, 245, 255));
         sinonimosVocablo.setColumns(10);
-        sinonimosVocablo.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        sinonimosVocablo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         sinonimosVocablo.setRows(5);
         jScrollPane4.setViewportView(sinonimosVocablo);
 
         derivadosVocablo.setEditable(false);
         derivadosVocablo.setBackground(new java.awt.Color(245, 245, 255));
         derivadosVocablo.setColumns(10);
-        derivadosVocablo.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        derivadosVocablo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         derivadosVocablo.setRows(5);
         jScrollPane5.setViewportView(derivadosVocablo);
 
         antonimosVocablo.setEditable(false);
         antonimosVocablo.setBackground(new java.awt.Color(245, 245, 255));
         antonimosVocablo.setColumns(10);
-        antonimosVocablo.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        antonimosVocablo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         antonimosVocablo.setRows(5);
         jScrollPane6.setViewportView(antonimosVocablo);
 
@@ -546,7 +732,7 @@ public class vistaDiccionario extends javax.swing.JFrame {
         loginAdmin.setBackground(new java.awt.Color(245, 245, 255));
         loginAdmin.setFont(new java.awt.Font("Tahoma", 2, 12)); // NOI18N
         loginAdmin.setForeground(new java.awt.Color(255, 51, 51));
-        loginAdmin.setText("Ingresar Administrador");
+        loginAdmin.setText("Ingresar administrador");
         loginAdmin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loginAdminActionPerformed(evt);
@@ -573,45 +759,36 @@ public class vistaDiccionario extends javax.swing.JFrame {
             }
         });
 
-        bienvenida.setEditable(false);
-        bienvenida.setBackground(new java.awt.Color(235, 235, 255));
-        bienvenida.setColumns(8);
-        bienvenida.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        bienvenida.setForeground(new java.awt.Color(255, 51, 51));
-        bienvenida.setRows(5);
-        bienvenida.setText("\n Búsqueda de palabras \nen el diccionario urbano.\n \n      Usuario común.");
-        bienvenida.setMaximumSize(new java.awt.Dimension(90, 100));
-        bienvenida.setMinimumSize(new java.awt.Dimension(70, 80));
-        bienvenida.setPreferredSize(new java.awt.Dimension(80, 79));
-        jScrollPane7.setViewportView(bienvenida);
-
+        acepcionesVocablo.setEditable(false);
+        acepcionesVocablo.setBackground(new java.awt.Color(245, 245, 255));
         acepcionesVocablo.setColumns(20);
-        acepcionesVocablo.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        acepcionesVocablo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         acepcionesVocablo.setRows(5);
         jScrollPane8.setViewportView(acepcionesVocablo);
 
+        acepcionesEjemplos.setEditable(false);
         acepcionesEjemplos.setBackground(new java.awt.Color(245, 245, 255));
-        acepcionesEjemplos.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        acepcionesEjemplos.setForeground(new java.awt.Color(0, 0, 153));
+        acepcionesEjemplos.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        acepcionesEjemplos.setForeground(new java.awt.Color(0, 51, 153));
         acepcionesEjemplos.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        acepcionesEjemplos.setText("Acepciones, ejemplos");
-
-        indicaSoez.setEditable(false);
-        indicaSoez.setBackground(new java.awt.Color(245, 245, 255));
-        indicaSoez.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        indicaSoez.setForeground(new java.awt.Color(0, 0, 204));
-        indicaSoez.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        acepcionesEjemplos.setText("Acepciones y ejemplos");
 
         indicaCategoria.setEditable(false);
         indicaCategoria.setBackground(new java.awt.Color(245, 245, 255));
-        indicaCategoria.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        indicaCategoria.setForeground(new java.awt.Color(0, 0, 204));
+        indicaCategoria.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
+        indicaCategoria.setForeground(new java.awt.Color(0, 0, 120));
         indicaCategoria.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
+        indicaSoez.setEditable(false);
+        indicaSoez.setBackground(new java.awt.Color(245, 245, 255));
+        indicaSoez.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
+        indicaSoez.setForeground(new java.awt.Color(0, 0, 120));
+        indicaSoez.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
         buscarTodo.setBackground(new java.awt.Color(245, 245, 255));
-        buscarTodo.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
-        buscarTodo.setForeground(new java.awt.Color(0, 0, 204));
-        buscarTodo.setText("Todo");
+        buscarTodo.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
+        buscarTodo.setForeground(new java.awt.Color(102, 102, 255));
+        buscarTodo.setText("Buscar todo");
         buscarTodo.setBorderPainted(false);
         buscarTodo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -619,98 +796,151 @@ public class vistaDiccionario extends javax.swing.JFrame {
             }
         });
 
+        bienvenida.setEditable(false);
+        bienvenida.setBackground(new java.awt.Color(245, 245, 255));
+        bienvenida.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        bienvenida.setForeground(new java.awt.Color(255, 0, 0));
+        bienvenida.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        bienvenida.setText("Usuario normal");
+
+        ejemploUso.setEditable(false);
+        ejemploUso.setBackground(new java.awt.Color(245, 245, 255));
+        ejemploUso.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        ejemploUso.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        ejemploUso.setPreferredSize(new java.awt.Dimension(80, 30));
+
+        limpiaInfoVocablos.setBackground(new java.awt.Color(245, 245, 255));
+        limpiaInfoVocablos.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
+        limpiaInfoVocablos.setForeground(new java.awt.Color(102, 102, 255));
+        limpiaInfoVocablos.setText("Limpiar");
+        limpiaInfoVocablos.setBorderPainted(false);
+        limpiaInfoVocablos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                limpiaInfoVocablosActionPerformed(evt);
+            }
+        });
+
+        etiquetaInformacion.setEditable(false);
+        etiquetaInformacion.setBackground(new java.awt.Color(245, 245, 255));
+        etiquetaInformacion.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
+        etiquetaInformacion.setForeground(new java.awt.Color(0, 51, 153));
+        etiquetaInformacion.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        etiquetaInformacion.setText("Información gramatical");
+        etiquetaInformacion.setPreferredSize(new java.awt.Dimension(80, 30));
+
+        etiquetaEjemploUso.setEditable(false);
+        etiquetaEjemploUso.setBackground(new java.awt.Color(245, 245, 255));
+        etiquetaEjemploUso.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        etiquetaEjemploUso.setForeground(new java.awt.Color(0, 51, 153));
+        etiquetaEjemploUso.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        etiquetaEjemploUso.setText("Ejemplo de uso");
+        etiquetaEjemploUso.setPreferredSize(new java.awt.Dimension(80, 30));
+
         javax.swing.GroupLayout consultaLayout = new javax.swing.GroupLayout(consulta);
         consulta.setLayout(consultaLayout);
         consultaLayout.setHorizontalGroup(
             consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, consultaLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(salir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(diccionarioUrbano)
-                    .addComponent(jScrollPane7)
-                    .addComponent(logoutAdmin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(loginAdmin, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(15, 15, 15)
-                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane8)
                     .addGroup(consultaLayout.createSequentialGroup()
-                        .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(salir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(diccionarioUrbano)
+                            .addComponent(logoutAdmin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(loginAdmin, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(bienvenida)
                             .addComponent(acepcionesEjemplos)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
-                            .addComponent(etiquetaVocablo1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(etiquetaSinonimo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(consultaLayout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(etiquetaAntonimo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(edicionVocablo1, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
-                                .addGap(10, 10, 10)
-                                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(etiquetaDerivados, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addGroup(consultaLayout.createSequentialGroup()
-                                        .addGap(0, 0, Short.MAX_VALUE)
-                                        .addComponent(buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(buscarTodo, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, consultaLayout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(indicaSoez)
-                                .addGap(10, 10, 10)
-                                .addComponent(indicaCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(1, 1, 1))))
-                    .addGroup(consultaLayout.createSequentialGroup()
-                        .addGap(140, 140, 140)
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
+                                .addComponent(buscarTodo)
+                                .addGap(2, 2, 2)
+                                .addComponent(limpiaInfoVocablos, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(consultaLayout.createSequentialGroup()
+                                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(consultaLayout.createSequentialGroup()
+                                        .addComponent(etiquetaSinonimo, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(149, 149, 149)
+                                        .addComponent(etiquetaDerivados, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(consultaLayout.createSequentialGroup()
+                                        .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(etiquetaVocablo1, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(etiquetaEjemploUso, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(consultaLayout.createSequentialGroup()
+                                                .addComponent(edicionVocablo1, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(ejemploUso, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(consultaLayout.createSequentialGroup()
+                                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
+                                    .addComponent(etiquetaInformacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(indicaCategoria)
+                                    .addComponent(jScrollPane6)
+                                    .addComponent(etiquetaAntonimo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(indicaSoez, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE))))))
                 .addContainerGap())
         );
         consultaLayout.setVerticalGroup(
             consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(consultaLayout.createSequentialGroup()
-                .addGap(15, 15, 15)
+                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(consultaLayout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(consultaLayout.createSequentialGroup()
+                                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(etiquetaVocablo1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(diccionarioUrbano, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(consultaLayout.createSequentialGroup()
+                                        .addGap(1, 1, 1)
+                                        .addComponent(ejemploUso, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(bienvenida, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(etiquetaEjemploUso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(consultaLayout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addComponent(edicionVocablo1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(buscarTodo, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(consultaLayout.createSequentialGroup()
-                        .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(consultaLayout.createSequentialGroup()
-                                .addGap(1, 1, 1)
-                                .addComponent(edicionVocablo1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(consultaLayout.createSequentialGroup()
-                                .addComponent(etiquetaVocablo1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(etiquetaSinonimo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(etiquetaAntonimo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(etiquetaDerivados, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(diccionarioUrbano, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(15, 15, 15)
-                        .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
-                                .addComponent(jScrollPane7)
-                                .addComponent(jScrollPane6))
-                            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(consultaLayout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(loginAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(etiquetaSinonimo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(etiquetaAntonimo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(etiquetaDerivados, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(limpiaInfoVocablos, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(buscarTodo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane4)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, consultaLayout.createSequentialGroup()
+                        .addComponent(loginAdmin)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(logoutAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(logoutAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(salir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(consultaLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(acepcionesEjemplos, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
-                            .addComponent(indicaSoez, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
-                            .addComponent(indicaCategoria, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(salir, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane6)
+                    .addComponent(jScrollPane5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                .addGroup(consultaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(acepcionesEjemplos, javax.swing.GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
+                    .addComponent(indicaCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(indicaSoez)
+                    .addComponent(etiquetaInformacion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(15, 15, 15))
         );
 
@@ -721,8 +951,6 @@ public class vistaDiccionario extends javax.swing.JFrame {
         edicion.setPreferredSize(new java.awt.Dimension(600, 400));
 
         edicionVocablo.setBackground(new java.awt.Color(245, 245, 255));
-        edicionVocablo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        edicionVocablo.setForeground(new java.awt.Color(0, 51, 153));
         edicionVocablo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         edicionVocablo.setPreferredSize(new java.awt.Dimension(80, 30));
 
@@ -736,19 +964,18 @@ public class vistaDiccionario extends javax.swing.JFrame {
 
         etiquetaRelacionada.setEditable(false);
         etiquetaRelacionada.setBackground(new java.awt.Color(245, 245, 255));
-        etiquetaRelacionada.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        etiquetaRelacionada.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
         etiquetaRelacionada.setForeground(new java.awt.Color(0, 51, 153));
         etiquetaRelacionada.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         etiquetaRelacionada.setText("Palabra relacionada");
         etiquetaRelacionada.setPreferredSize(new java.awt.Dimension(80, 30));
 
         edicionRelacionada.setBackground(new java.awt.Color(245, 245, 255));
-        edicionRelacionada.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        edicionRelacionada.setForeground(new java.awt.Color(0, 51, 153));
         edicionRelacionada.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         edicionRelacionada.setPreferredSize(new java.awt.Dimension(80, 30));
 
-        listaRelacionadas.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        listaRelacionadas.setBackground(new java.awt.Color(245, 245, 255));
+        listaRelacionadas.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         listaRelacionadas.setForeground(new java.awt.Color(102, 102, 255));
         listaRelacionadas.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Sinónimo", "Antónimo", "Derivado" };
@@ -758,22 +985,22 @@ public class vistaDiccionario extends javax.swing.JFrame {
         listaRelacionadas.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         listaRelacionadas.setAlignmentY(5.0F);
         listaRelacionadas.setMaximumSize(new java.awt.Dimension(100, 80));
-        listaRelacionadas.setMinimumSize(new java.awt.Dimension(70, 50));
-        listaRelacionadas.setPreferredSize(new java.awt.Dimension(70, 50));
+        listaRelacionadas.setMinimumSize(new java.awt.Dimension(70, 42));
+        listaRelacionadas.setPreferredSize(new java.awt.Dimension(70, 35));
         panel1.setViewportView(listaRelacionadas);
 
         listaCategorias.setBackground(new java.awt.Color(245, 245, 255));
         listaCategorias.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         listaCategorias.setForeground(new java.awt.Color(102, 102, 255));
         listaCategorias.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Sustantivo", "Adjetivo", "Artículo", "Pronombre", "Verbo", "Adverbio", "Interjección", "Preposición", "Conjunción", " " };
+            String[] strings = { "Sustantivo", "Adjetivo", "Artículo", "Pronombre", "Verbo", "Adverbio", "Interjección", "Preposición", "Conjunción" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
         listaCategorias.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         listaCategorias.setMaximumSize(new java.awt.Dimension(200, 400));
-        listaCategorias.setMinimumSize(new java.awt.Dimension(105, 170));
-        listaCategorias.setPreferredSize(new java.awt.Dimension(100, 170));
+        listaCategorias.setMinimumSize(new java.awt.Dimension(100, 152));
+        listaCategorias.setPreferredSize(new java.awt.Dimension(100, 152));
         panel2.setViewportView(listaCategorias);
 
         agregarVocablo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -834,8 +1061,6 @@ public class vistaDiccionario extends javax.swing.JFrame {
         });
 
         edicionAcepcion.setBackground(new java.awt.Color(245, 245, 255));
-        edicionAcepcion.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        edicionAcepcion.setForeground(new java.awt.Color(0, 51, 153));
         edicionAcepcion.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         edicionAcepcion.setPreferredSize(new java.awt.Dimension(80, 30));
 
@@ -856,38 +1081,26 @@ public class vistaDiccionario extends javax.swing.JFrame {
         etiquetaEjemplo.setPreferredSize(new java.awt.Dimension(80, 30));
 
         edicionEjemplo.setBackground(new java.awt.Color(245, 245, 255));
-        edicionEjemplo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        edicionEjemplo.setForeground(new java.awt.Color(0, 51, 153));
         edicionEjemplo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         edicionEjemplo.setPreferredSize(new java.awt.Dimension(80, 30));
 
-        agregarAcepción.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        agregarAcepción.setForeground(new java.awt.Color(0, 0, 153));
-        agregarAcepción.setText("Agregar");
-        agregarAcepción.setPreferredSize(new java.awt.Dimension(75, 30));
-        agregarAcepción.addActionListener(new java.awt.event.ActionListener() {
+        agregarAcepcion.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        agregarAcepcion.setForeground(new java.awt.Color(0, 0, 153));
+        agregarAcepcion.setText("Agregar");
+        agregarAcepcion.setPreferredSize(new java.awt.Dimension(75, 30));
+        agregarAcepcion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                agregarAcepciónActionPerformed(evt);
+                agregarAcepcionActionPerformed(evt);
             }
         });
 
-        editarAcepción.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        editarAcepción.setForeground(new java.awt.Color(0, 0, 153));
-        editarAcepción.setText("Editar");
-        editarAcepción.setPreferredSize(new java.awt.Dimension(75, 30));
-        editarAcepción.addActionListener(new java.awt.event.ActionListener() {
+        borrarAcepcion.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        borrarAcepcion.setForeground(new java.awt.Color(255, 0, 0));
+        borrarAcepcion.setText("Borrar");
+        borrarAcepcion.setPreferredSize(new java.awt.Dimension(75, 30));
+        borrarAcepcion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editarAcepciónActionPerformed(evt);
-            }
-        });
-
-        borrarAcepción.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        borrarAcepción.setForeground(new java.awt.Color(255, 0, 0));
-        borrarAcepción.setText("Borrar");
-        borrarAcepción.setPreferredSize(new java.awt.Dimension(75, 30));
-        borrarAcepción.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                borrarAcepciónActionPerformed(evt);
+                borrarAcepcionActionPerformed(evt);
             }
         });
 
@@ -896,15 +1109,65 @@ public class vistaDiccionario extends javax.swing.JFrame {
         acciones.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         acciones.setForeground(new java.awt.Color(102, 102, 255));
         acciones.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        acciones.setText("Acciones");
+        acciones.setText("Mensajes");
 
         mensaje.setBackground(new java.awt.Color(245, 245, 255));
-        mensaje.setColumns(20);
         mensaje.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         mensaje.setForeground(new java.awt.Color(0, 51, 255));
         mensaje.setLineWrap(true);
-        mensaje.setRows(5);
+        mensaje.setRows(4);
         panel3.setViewportView(mensaje);
+
+        edicionExplicacion.setBackground(new java.awt.Color(245, 245, 255));
+        edicionExplicacion.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        edicionExplicacion.setPreferredSize(new java.awt.Dimension(80, 30));
+
+        etiquetaExplicacion.setEditable(false);
+        etiquetaExplicacion.setBackground(new java.awt.Color(245, 245, 255));
+        etiquetaExplicacion.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        etiquetaExplicacion.setForeground(new java.awt.Color(0, 51, 153));
+        etiquetaExplicacion.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        etiquetaExplicacion.setText("Explicación");
+        etiquetaExplicacion.setPreferredSize(new java.awt.Dimension(80, 30));
+
+        edicionEjemploVocablo.setBackground(new java.awt.Color(245, 245, 255));
+        edicionEjemploVocablo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        edicionEjemploVocablo.setPreferredSize(new java.awt.Dimension(80, 30));
+
+        etiquetaEjemploVocablo.setEditable(false);
+        etiquetaEjemploVocablo.setBackground(new java.awt.Color(245, 245, 255));
+        etiquetaEjemploVocablo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        etiquetaEjemploVocablo.setForeground(new java.awt.Color(0, 51, 153));
+        etiquetaEjemploVocablo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        etiquetaEjemploVocablo.setText("Ejemplo");
+        etiquetaEjemploVocablo.setPreferredSize(new java.awt.Dimension(80, 30));
+
+        etiquetaEditar.setEditable(false);
+        etiquetaEditar.setBackground(new java.awt.Color(245, 245, 255));
+        etiquetaEditar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        etiquetaEditar.setForeground(new java.awt.Color(102, 102, 255));
+        etiquetaEditar.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        etiquetaEditar.setText("¡Edita el diccionario!");
+
+        limpiarEdicion.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        limpiarEdicion.setForeground(new java.awt.Color(102, 102, 255));
+        limpiarEdicion.setText("Limpiar");
+        limpiarEdicion.setPreferredSize(new java.awt.Dimension(75, 30));
+        limpiarEdicion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                limpiarEdicionActionPerformed(evt);
+            }
+        });
+
+        ayuda.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        ayuda.setForeground(new java.awt.Color(102, 102, 255));
+        ayuda.setText("Ayuda");
+        ayuda.setPreferredSize(new java.awt.Dimension(75, 30));
+        ayuda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ayudaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout edicionLayout = new javax.swing.GroupLayout(edicion);
         edicion.setLayout(edicionLayout);
@@ -912,107 +1175,142 @@ public class vistaDiccionario extends javax.swing.JFrame {
             edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, edicionLayout.createSequentialGroup()
                 .addGap(15, 15, 15)
-                .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(etiquetaVocablo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(edicionVocablo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(etiquetaRelacionada, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(etiquetaAcepcion, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(edicionAcepcion, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(edicionRelacionada, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(etiquetaVocablo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                    .addComponent(etiquetaRelacionada, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                    .addComponent(etiquetaAcepcion, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                    .addComponent(edicionRelacionada, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                    .addComponent(edicionAcepcion, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                    .addComponent(etiquetaEjemploVocablo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
                     .addGroup(edicionLayout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addComponent(esSoez, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
-                .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(esSoez, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(edicionVocablo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(edicionLayout.createSequentialGroup()
                         .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(edicionLayout.createSequentialGroup()
-                                .addComponent(etiquetaEjemplo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(agregarAcepción, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(edicionEjemplo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(borrarAcepción, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(editarAcepción, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(edicionLayout.createSequentialGroup()
-                        .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(edicionLayout.createSequentialGroup()
-                                .addGap(24, 24, 24)
-                                .addComponent(panel1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(36, 36, 36)
-                                .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(agregarRelacionada, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(borrarRelacionada, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(edicionLayout.createSequentialGroup()
+                                .addGap(3, 3, 3)
                                 .addComponent(panel2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(15, 15, 15)
+                                .addGap(18, 18, 18)
                                 .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(editarVocablo, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE)
                                     .addComponent(agregarVocablo, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE)
-                                    .addComponent(borrarVocablo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                        .addGap(21, 21, 21)
+                                    .addComponent(borrarVocablo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(edicionEjemploVocablo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(edicionLayout.createSequentialGroup()
+                                .addGap(30, 30, 30)
+                                .addComponent(panel1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(agregarRelacionada, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(borrarRelacionada, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(18, 18, 18)
                         .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(acciones, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
-                            .addComponent(panel3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+                            .addComponent(acciones)
+                            .addComponent(panel3)
+                            .addComponent(etiquetaEditar)
+                            .addGroup(edicionLayout.createSequentialGroup()
+                                .addComponent(limpiarEdicion, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(ayuda, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(edicionLayout.createSequentialGroup()
+                        .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(edicionLayout.createSequentialGroup()
+                                .addComponent(edicionEjemplo, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(edicionExplicacion, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE))
+                            .addGroup(edicionLayout.createSequentialGroup()
+                                .addComponent(etiquetaEjemplo, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(etiquetaExplicacion, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(borrarAcepcion, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(agregarAcepcion, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(15, 15, 15))
         );
         edicionLayout.setVerticalGroup(
             edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(edicionLayout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGap(20, 20, 20)
+                .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(edicionLayout.createSequentialGroup()
+                        .addComponent(agregarVocablo, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(editarVocablo, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(11, 11, 11)
+                        .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(borrarVocablo, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(limpiarEdicion, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ayuda, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(51, 51, 51)
+                        .addComponent(panel3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addGroup(edicionLayout.createSequentialGroup()
                         .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(edicionLayout.createSequentialGroup()
-                                .addComponent(etiquetaVocablo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(7, 7, 7)
+                                .addComponent(etiquetaVocablo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(esSoez, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(edicionVocablo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(panel2, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(20, 20, 20)
-                        .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(panel2, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(edicionLayout.createSequentialGroup()
-                                .addComponent(etiquetaRelacionada, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(edicionRelacionada, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, edicionLayout.createSequentialGroup()
-                                .addComponent(agregarRelacionada, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(18, 18, 18)
-                                .addComponent(borrarRelacionada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(panel1, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(edicionLayout.createSequentialGroup()
-                        .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(acciones, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(edicionLayout.createSequentialGroup()
-                                .addComponent(agregarVocablo, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(editarVocablo, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(etiquetaEditar)
+                                .addGap(36, 36, 36)))
                         .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(edicionLayout.createSequentialGroup()
-                                .addGap(11, 11, 11)
-                                .addComponent(borrarVocablo, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(etiquetaEjemploVocablo, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, edicionLayout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(edicionEjemploVocablo, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(acciones, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(edicionLayout.createSequentialGroup()
+                                .addGap(14, 14, 14)
+                                .addComponent(agregarRelacionada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(borrarRelacionada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(edicionLayout.createSequentialGroup()
                                 .addGap(18, 18, 18)
-                                .addComponent(panel3)))))
-                .addGap(20, 20, 20)
-                .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(etiquetaAcepcion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(etiquetaEjemplo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(agregarAcepción, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(editarAcepción, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(15, 15, 15)
-                .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(edicionAcepcion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(edicionEjemplo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(borrarAcepción, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                                .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(panel1, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(edicionLayout.createSequentialGroup()
+                                        .addComponent(etiquetaRelacionada, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(edicionRelacionada, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+                .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(edicionLayout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(etiquetaAcepcion, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(etiquetaEjemplo, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(etiquetaExplicacion, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(edicionLayout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(agregarAcepcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(edicionLayout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addGroup(edicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(edicionAcepcion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(edicionEjemplo, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(edicionExplicacion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, edicionLayout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addComponent(borrarAcepcion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18))
         );
 
         ventanas.addTab("Edición vocablos", edicion);
 
+        tabla.setBackground(new java.awt.Color(245, 245, 255));
+        tabla.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        tabla.setForeground(new java.awt.Color(255, 51, 51));
         tabla.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
@@ -1039,8 +1337,12 @@ public class vistaDiccionario extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
+        tabla.setMaximumSize(new java.awt.Dimension(1000, 12000));
+        tabla.setMinimumSize(new java.awt.Dimension(450, 150));
+        tabla.setPreferredSize(new java.awt.Dimension(1000, 2500));
         panel5.setViewportView(tabla);
 
+        consultaTexto.setBackground(new java.awt.Color(245, 245, 255));
         consultaTexto.setColumns(20);
         consultaTexto.setFont(new java.awt.Font("Alef", 0, 14)); // NOI18N
         consultaTexto.setRows(5);
@@ -1048,7 +1350,7 @@ public class vistaDiccionario extends javax.swing.JFrame {
 
         consultaEspecial.setBackground(new java.awt.Color(245, 245, 255));
         consultaEspecial.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        consultaEspecial.setForeground(new java.awt.Color(153, 153, 255));
+        consultaEspecial.setForeground(new java.awt.Color(102, 102, 255));
         consultaEspecial.setText("Consulta MySQL");
         consultaEspecial.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1056,12 +1358,12 @@ public class vistaDiccionario extends javax.swing.JFrame {
             }
         });
 
-        informacion.setColumns(4);
-        informacion.setFont(new java.awt.Font("Alef", 0, 12)); // NOI18N
+        informacion.setBackground(new java.awt.Color(245, 245, 255));
+        informacion.setFont(new java.awt.Font("Alef", 0, 10)); // NOI18N
         informacion.setLineWrap(true);
         informacion.setRows(5);
-        informacion.setText("\tInformación");
-        informacion.setPreferredSize(new java.awt.Dimension(200, 80));
+        informacion.setTabSize(5);
+        informacion.setText("\t\t\tInformación");
         panel7.setViewportView(informacion);
 
         javax.swing.GroupLayout especialLayout = new javax.swing.GroupLayout(especial);
@@ -1069,15 +1371,15 @@ public class vistaDiccionario extends javax.swing.JFrame {
         especialLayout.setHorizontalGroup(
             especialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(especialLayout.createSequentialGroup()
-                .addGap(50, 50, 50)
+                .addGap(52, 52, 52)
                 .addGroup(especialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(especialLayout.createSequentialGroup()
                         .addComponent(consultaEspecial, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(panel7))
-                    .addComponent(panel5, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
-                    .addComponent(panel6))
-                .addContainerGap(50, Short.MAX_VALUE))
+                        .addComponent(panel7, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE))
+                    .addComponent(panel6)
+                    .addComponent(panel5))
+                .addContainerGap(53, Short.MAX_VALUE))
         );
         especialLayout.setVerticalGroup(
             especialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1135,63 +1437,12 @@ public class vistaDiccionario extends javax.swing.JFrame {
             // se activan las características especiales
             // de la interfaz.
             
-            admin = true;
+            this.activar(true);
             
-            panel1.setEnabled(admin);
-            panel2.setEnabled(admin);
-            panel3.setEnabled(admin);
-
-            edicion.setEnabled(admin);
-            edicionVocablo.setEnabled(admin);
-            etiquetaVocablo.setEnabled(admin);
-            edicionAcepcion.setEnabled(admin);
-            etiquetaAcepcion.setEnabled(admin);
-            edicionEjemplo.setEnabled(admin);
-            etiquetaEjemplo.setEnabled(admin);
-            edicionRelacionada.setEnabled(admin);
-            etiquetaRelacionada.setEnabled(admin);
-
-            listaCategorias.setEnabled(admin);
-            listaRelacionadas.setEnabled(admin);
-            esSoez.setEnabled(admin);
-
-            agregarVocablo.setEnabled(admin);
-            editarVocablo.setEnabled(admin);
-            borrarVocablo.setEnabled(admin);
-            agregarAcepción.setEnabled(admin);
-            editarAcepción.setEnabled(admin);
-            borrarAcepción.setEnabled(admin);
-            agregarRelacionada.setEnabled(admin);
-            borrarRelacionada.setEnabled(admin);
-
-            acciones.setEnabled(admin);
-            mensaje.setEnabled(admin);
-
-            panel4.setEnabled(admin);
+            usuarioAdmin.setText("");
+            contrasenaAdmin.setText("");
             
-            panelMostrarVocablos.setEnabled(admin);
-            mostrarVocablo.setEnabled(admin);
-            mostrarVocablos.setEnabled(admin);
-            listaVocablosTodo.setEnabled(admin);
-            anuncioListaVocablos.setEnabled(admin);
-
-            buscarTodo.setEnabled(admin);
-            refrescarVocablos.setEnabled(admin);
-
-            panel5.setEnabled(admin);
-            panel6.setEnabled(admin);
-            panel7.setEnabled(admin);
-
-            especial.setEnabled(admin);
-            consultaTexto.setEnabled(admin);
-            consultaEspecial.setEnabled(admin);
-            informacion.setEnabled(admin);
-            tabla.setEnabled(admin);
-
-            bienvenida.setText("\n Búsqueda de palabras \n" +
-                               "en el diccionario urbano.\n" +
-                               " \n       Administrador.");
-
+            bienvenida.setText("Administrador");
             ingreso.setVisible(false);
         
         } else {
@@ -1201,7 +1452,7 @@ public class vistaDiccionario extends javax.swing.JFrame {
             
             usuarioAdmin.setText("");
             contrasenaAdmin.setText("");
-            anuncioAdmin.setText("Usuario incorrecto");
+            anuncioAdmin.setText("Usuario incorrecto.");
             
         }
         
@@ -1209,31 +1460,20 @@ public class vistaDiccionario extends javax.swing.JFrame {
 
     private void cancelarAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarAdminActionPerformed
         
-        // Aparece la ventana de inicio de sesión.
-
+        // Desaparece la ventana de inicio de sesión.
         ingreso.setVisible(false);
+        
+        usuarioAdmin.setText("");
+        contrasenaAdmin.setText("");
         
     }//GEN-LAST:event_cancelarAdminActionPerformed
 
     private void agregarVocabloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarVocabloActionPerformed
         
-        String vocablo = edicionVocablo.getText();
-        String categoria = listaCategorias.getSelectedValue();
-        
-        String soez;
-        
-        if(esSoez.isSelected()){           
-            soez = "si";        
-        } else {           
-            soez = "no";        
-        }
-        
-        if((categoria == null) || vocablo.replace(" ", "").equals("")){            
-            return;   
-        } else {            
-            // Se agrega un vocablo y su información correspondiente.       
-            mensaje.setText(vbc.agregar(vocablo, categoria, soez));        
-        }
+        mensaje.setText(vbc.agrega(edicionVocablo.getText(), 
+                                    listaCategorias.getSelectedValue(), 
+                                    esSoez.isSelected(),
+                                    edicionEjemploVocablo.getText()));
         
     }//GEN-LAST:event_agregarVocabloActionPerformed
 
@@ -1246,136 +1486,50 @@ public class vistaDiccionario extends javax.swing.JFrame {
     }//GEN-LAST:event_borrarVocabloActionPerformed
 
     private void editarVocabloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarVocabloActionPerformed
-            
-        String vocablo = edicionVocablo.getText();
-        String categoria = listaCategorias.getSelectedValue();
-        String soez;
+
+        String ejemplo = edicionEjemploVocablo.getText();
         
-        if(esSoez.isSelected()){            
-            soez = "si";        
-        } else {           
-            soez = "no";       
-        }
-        
-        if((categoria == null) || vocablo.replace(" ", "").equals("")){            
-            return;    
+        if((ejemplo.replace(" ", "").equals(""))){            
+            mensaje.setText(vbc.edita(edicionVocablo.getText(),
+                                      listaCategorias.getSelectedValue(),
+                                      esSoez.isSelected()));    
         } else {        
-            // Se edita la información de un vocablo.            
-            mensaje.setText(vbc.editar(vocablo, categoria, soez));            
+            mensaje.setText(vbc.edita(edicionVocablo.getText(),
+                                      listaCategorias.getSelectedValue(),
+                                      esSoez.isSelected(),
+                                      ejemplo));
         }
         
     }//GEN-LAST:event_editarVocabloActionPerformed
 
     private void agregarRelacionadaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarRelacionadaActionPerformed
-        
-        String vocablo = edicionVocablo.getText();
-        String palabra = edicionRelacionada.getText();
-        String tipoPalabra = listaRelacionadas.getSelectedValue();
-        
-        if((tipoPalabra == null) || (vocablo.replace(" ", "").equals(""))
-                                 || (palabra.replace(" ", "").equals(""))){            
-            return;
-            
-        } else {
-            
-            // Se agrega una palabra relacionada a cierto vocablo.
-        
-            switch (tipoPalabra) {
-                
-                case "Sinónimo":                   
-                    mensaje.setText(snc.agregar(palabra, vocablo));                   
-                    break;
-                    
-                case "Antónimo":                  
-                    mensaje.setText(anc.agregar(palabra, vocablo));                   
-                    break;
-                    
-                default:                  
-                    mensaje.setText(drc.agregar(palabra, vocablo));                   
-                    break;
-                    
-            }
-        }
+  
+        mensaje.setText(rcc.agrega(edicionVocablo.getText(),
+                   edicionRelacionada.getText(),
+                   listaRelacionadas.getSelectedValue()));
         
     }//GEN-LAST:event_agregarRelacionadaActionPerformed
 
     private void borrarRelacionadaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrarRelacionadaActionPerformed
         
-        String vocablo = edicionVocablo.getText();
-        String palabra = edicionRelacionada.getText();
-        String tipoPalabra = listaRelacionadas.getSelectedValue();
-        
-        if(tipoPalabra == null){
-            
-            return;
-    
-        } else {
-            
-            // Borrado de una palabra relacionada a cierto vocablo.
-        
-            switch (tipoPalabra) {
-                
-                case "Sinónimo":                    
-                    mensaje.setText(snc.borrar(palabra, vocablo));                    
-                    break;
-                    
-                case "Antónimo":                    
-                    mensaje.setText(anc.borrar(palabra, vocablo));                   
-                    break;
-                    
-                default:                    
-                    mensaje.setText(drc.borrar(palabra, vocablo));                   
-                    break;
-                    
-            }
-        }
+        mensaje.setText(rcc.borra(edicionVocablo.getText(),
+                   edicionRelacionada.getText(),
+                   listaRelacionadas.getSelectedValue()));
         
     }//GEN-LAST:event_borrarRelacionadaActionPerformed
 
-    private void agregarAcepciónActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarAcepciónActionPerformed
-        
-        String vocablo = edicionVocablo.getText();
-        String acepcion = edicionAcepcion.getText();
-        String ejemplo = edicionEjemplo.getText();
-        
-        if((vocablo.replace(" ", "").equals("")) ||
-           (acepcion.replace(" ", "").equals("")) ||
-           (ejemplo.replace(" ", "").equals(""))){            
-            return;    
-        } else {       
-            mensaje.setText(apc.agregar(acepcion, ejemplo, vocablo));
-            
-        }
-        
-    }//GEN-LAST:event_agregarAcepciónActionPerformed
+    private void agregarAcepcionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregarAcepcionActionPerformed
 
-    private void editarAcepciónActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarAcepciónActionPerformed
+        mensaje.setText(apc.agregar(edicionVocablo.getText(), edicionAcepcion.getText(),
+                                    edicionEjemplo.getText(), edicionExplicacion.getText()));
+        
+    }//GEN-LAST:event_agregarAcepcionActionPerformed
 
-        String acepcion = edicionAcepcion.getText();
-        String ejemplo = edicionEjemplo.getText();
-        
-        if((acepcion.replace(" ", "").equals("")) ||
-           (ejemplo.replace(" ", "").equals(""))){
-            return;    
-        } else {        
-            mensaje.setText(apc.editar(acepcion, ejemplo));            
-        }
-        
-    }//GEN-LAST:event_editarAcepciónActionPerformed
+    private void borrarAcepcionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrarAcepcionActionPerformed
 
-    private void borrarAcepciónActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrarAcepciónActionPerformed
-        
-        String vocablo = edicionVocablo.getText();
-        String acepcion = edicionAcepcion.getText();
-        String ejemplo = edicionEjemplo.getText();
-        
-        if(vocablo.replace(" ", "").equals("")){
-            return;
-        } else {
-            mensaje.setText(apc.borrar(acepcion, vocablo));            
-        }
-        
-    }//GEN-LAST:event_borrarAcepciónActionPerformed
+        mensaje.setText(apc.borrar(edicionVocablo.getText(), edicionAcepcion.getText()));            
+
+    }//GEN-LAST:event_borrarAcepcionActionPerformed
 
     private void loginAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginAdminActionPerformed
 
@@ -1385,62 +1539,9 @@ public class vistaDiccionario extends javax.swing.JFrame {
 
     private void logoutAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutAdminActionPerformed
                
-        admin = true;
+        this.activar(false);
         
-        panel1.setEnabled(admin);
-        panel2.setEnabled(admin);
-        panel3.setEnabled(admin);
-
-        edicion.setEnabled(admin);
-        edicionVocablo.setEnabled(admin);
-        etiquetaVocablo.setEnabled(admin);
-        edicionAcepcion.setEnabled(admin);
-        etiquetaAcepcion.setEnabled(admin);
-        edicionEjemplo.setEnabled(admin);
-        etiquetaEjemplo.setEnabled(admin);
-        edicionRelacionada.setEnabled(admin);
-        etiquetaRelacionada.setEnabled(admin);
-
-        listaCategorias.setEnabled(admin);
-        listaRelacionadas.setEnabled(admin);
-        esSoez.setEnabled(admin);
-
-        agregarVocablo.setEnabled(admin);
-        editarVocablo.setEnabled(admin);
-        borrarVocablo.setEnabled(admin);
-        agregarAcepción.setEnabled(admin);
-        editarAcepción.setEnabled(admin);
-        borrarAcepción.setEnabled(admin);
-        agregarRelacionada.setEnabled(admin);
-        borrarRelacionada.setEnabled(admin);
-
-        acciones.setEnabled(admin);
-        mensaje.setEnabled(admin);
-
-        panel4.setEnabled(admin);
-
-        panelMostrarVocablos.setEnabled(admin);
-        mostrarVocablo.setEnabled(admin);
-        mostrarVocablos.setEnabled(admin);
-        listaVocablosTodo.setEnabled(admin);
-        anuncioListaVocablos.setEnabled(admin);
-
-        buscarTodo.setEnabled(admin);
-        refrescarVocablos.setEnabled(admin);
-
-        panel5.setEnabled(admin);
-        panel6.setEnabled(admin);
-        panel7.setEnabled(admin);
-
-        especial.setEnabled(admin);
-        consultaTexto.setEnabled(admin);
-        consultaEspecial.setEnabled(admin);
-        informacion.setEnabled(admin);
-        tabla.setEnabled(admin);
-
-        bienvenida.setText("\n Búsqueda de palabras \n" +
-                           "en el diccionario urbano.\n" +
-                           " \n      Usuario normal.");       
+        bienvenida.setText("Usuario normal");       
         
     }//GEN-LAST:event_logoutAdminActionPerformed
 
@@ -1460,8 +1561,8 @@ public class vistaDiccionario extends javax.swing.JFrame {
 
     private void buscarTodoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarTodoActionPerformed
         
-        mostrarVocablos.setVisible(true);
         refrescarVocablosActionPerformed(evt);
+        mostrarVocablos.setVisible(true);
         
     }//GEN-LAST:event_buscarTodoActionPerformed
 
@@ -1488,8 +1589,7 @@ public class vistaDiccionario extends javax.swing.JFrame {
         
         // La lista de vocablos se actualiza, para
         // mostrar nuevos vocablos y quitar los
-        // los que han sido borrados.
-        
+        // los que han sido borrados.        
         listaVocablosTodo.setModel(model);
             
     }//GEN-LAST:event_refrescarVocablosActionPerformed
@@ -1498,74 +1598,74 @@ public class vistaDiccionario extends javax.swing.JFrame {
         
         // Organiza los resultados de una consulta
         // y los muestra al usuario.
-        
-        String query = consultaTexto.getText();
-        
-        if(query.replace("\t", "").replace("\n", "").replace(" ", "").equals("")){
             
-            informacion.setText("");
-        
+        //Se realiza la consulta.  
+        ResultSet rs = ccc.consulta(consultaTexto.getText());
+            
+        // Si no hay resultados por mostrar, 
+        // se le indica al usuario si su
+        // operación se ejecutó correctamente.
+            
+        if(rs == null){
+            informacion.setText(ccc.getInfo());
         } else {
-            
-            //Se realiza la consulta.
-            
-            ResultSet rs = ccc.consulta(query);
-            
-            // Si no hay resultados por mostrar, 
-            // se le indica al usuario si su
-            // operación se ejecutó correctamente.
-            
-            if(rs == null){
-            
-                if(ccc.getInfo().equals("")){
-                    informacion.setText("\tOperación realizada");
-                } else {
-                    informacion.setText(ccc.getInfo());
-                }
+
+            // Rearreglo de la tabla para mostrar
+            // la información requerida.                
+            DefaultTableModel model = new DefaultTableModel();
+
+            try {
+
+                ResultSetMetaData rsmd = rs.getMetaData();  
+                String tipoColumna;
+                int columnas = rsmd.getColumnCount();
+
+                // Se crean las columnas.                   
+                for (int i = 1; i <= columnas; i++ ) {
                     
-            } else {
-                
-                // Rearreglo de la tabla para mostrar
-                // la información requerida.
-                
-                DefaultTableModel model = new DefaultTableModel();
-                
-                try {
+                    tipoColumna = rsmd.getColumnTypeName(i);
                     
-                    ResultSetMetaData rsmd = rs.getMetaData();                   
-                    int columnas = rsmd.getColumnCount();
-                            
-                    // Se crean las columnas.
-                    
-                    for (int i = 1; i <= columnas; i++ ) {
-                        model.addColumn(rsmd.getColumnName(i));
+                    if("TINYINT".equals(tipoColumna) || "BOOLEAN".equals(tipoColumna)){
                     }
                     
-                    String[] entrada = new String[columnas];
+                    model.addColumn(rsmd.getColumnLabel(i));
+                       
                     
-                    // Se agregan las filas.
-                    
-                    while (rs.next()){
-                        for (int i = 0; i < columnas; i++ ) {                    
-                            entrada[i] = rs.getString(i+1);                        
-                        }                       
-                        model.addRow(entrada);                
-                    }
-                    
-                    // Actualización de la tabla.
-                    
-                    tabla.setModel(model);
-                    
-                } catch (SQLException ex) {                    
-                    Logger.getLogger(vistaDiccionario.class.getName()).
-                                     log(Level.SEVERE, null, ex);                
                 }
-            
-            }
-            
+
+                String[] entrada = new String[columnas];
+
+                // Se agregan las filas.                    
+                while (rs.next()){
+                    for (int i = 0; i < columnas; i++ ) {                    
+                        entrada[i] = rs.getString(i+1);                        
+                    }                       
+                    model.addRow(entrada);                
+                }
+
+                // Actualización de la tabla.                   
+                tabla.setModel(model);
+
+            } catch (SQLException ex) {                    
+                Logger.getLogger(vistaDiccionario.class.getName()).
+                                 log(Level.SEVERE, null, ex);                
+            }                
+            informacion.setText(ccc.getInfo());
         }
-        
+
     }//GEN-LAST:event_consultaEspecialActionPerformed
+
+    private void limpiarEdicionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_limpiarEdicionActionPerformed
+        this.limpiar(false);
+    }//GEN-LAST:event_limpiarEdicionActionPerformed
+
+    private void ayudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ayudaActionPerformed
+        panelAyuda.setVisible(true);
+    }//GEN-LAST:event_ayudaActionPerformed
+
+    private void limpiaInfoVocablosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_limpiaInfoVocablosActionPerformed
+        this.limpiar(true);
+    }//GEN-LAST:event_limpiaInfoVocablosActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1606,14 +1706,16 @@ public class vistaDiccionario extends javax.swing.JFrame {
     private javax.swing.JTextField acciones;
     private javax.swing.JTextField acepcionesEjemplos;
     private javax.swing.JTextArea acepcionesVocablo;
-    private javax.swing.JButton agregarAcepción;
+    private javax.swing.JButton agregarAcepcion;
     private javax.swing.JButton agregarRelacionada;
     private javax.swing.JButton agregarVocablo;
     private javax.swing.JTextArea antonimosVocablo;
     private javax.swing.JTextField anuncioAdmin;
     private javax.swing.JTextField anuncioListaVocablos;
-    private javax.swing.JTextArea bienvenida;
-    private javax.swing.JButton borrarAcepción;
+    private javax.swing.JButton ayuda;
+    private javax.swing.JTextArea ayudaInfo;
+    private javax.swing.JTextField bienvenida;
+    private javax.swing.JButton borrarAcepcion;
     private javax.swing.JButton borrarRelacionada;
     private javax.swing.JButton borrarVocablo;
     private javax.swing.JButton buscar;
@@ -1628,17 +1730,24 @@ public class vistaDiccionario extends javax.swing.JFrame {
     private javax.swing.JPanel edicion;
     private javax.swing.JTextField edicionAcepcion;
     private javax.swing.JTextField edicionEjemplo;
+    private javax.swing.JTextField edicionEjemploVocablo;
+    private javax.swing.JTextField edicionExplicacion;
     private javax.swing.JTextField edicionRelacionada;
     private javax.swing.JTextField edicionVocablo;
     private javax.swing.JTextField edicionVocablo1;
-    private javax.swing.JButton editarAcepción;
     private javax.swing.JButton editarVocablo;
+    private javax.swing.JTextField ejemploUso;
     private javax.swing.JRadioButton esSoez;
     private javax.swing.JPanel especial;
     private javax.swing.JTextField etiquetaAcepcion;
     private javax.swing.JTextField etiquetaAntonimo;
     private javax.swing.JTextField etiquetaDerivados;
+    private javax.swing.JTextField etiquetaEditar;
     private javax.swing.JTextField etiquetaEjemplo;
+    private javax.swing.JTextField etiquetaEjemploUso;
+    private javax.swing.JTextField etiquetaEjemploVocablo;
+    private javax.swing.JTextField etiquetaExplicacion;
+    private javax.swing.JTextField etiquetaInformacion;
     private javax.swing.JTextField etiquetaRelacionada;
     private javax.swing.JTextField etiquetaSinonimo;
     private javax.swing.JTextField etiquetaVocablo;
@@ -1653,6 +1762,8 @@ public class vistaDiccionario extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
+    private javax.swing.JButton limpiaInfoVocablos;
+    private javax.swing.JButton limpiarEdicion;
     private javax.swing.JList<String> listaCategorias;
     private javax.swing.JList<String> listaRelacionadas;
     private javax.swing.JList<String> listaVocablosTodo;
@@ -1668,6 +1779,8 @@ public class vistaDiccionario extends javax.swing.JFrame {
     private javax.swing.JScrollPane panel5;
     private javax.swing.JScrollPane panel6;
     private javax.swing.JScrollPane panel7;
+    private javax.swing.JPanel panel8;
+    private javax.swing.JFrame panelAyuda;
     private javax.swing.JPanel panelIngreso;
     private javax.swing.JPanel panelMostrarVocablos;
     private javax.swing.JPanel principal;

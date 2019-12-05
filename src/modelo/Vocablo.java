@@ -1,35 +1,44 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package modelo;
+
 
 import java.util.Objects;
 
+
 /**
- *
- * @author vick0
+ * Vocablo.
  */
 public class Vocablo {
     
-    private String vocablo;
+    
+    private final String vocablo;
     private String categoria;
-    private String es_soez;
-
-    public Vocablo(String vocablo, String categoria, String es_soez) {
+    private boolean es_soez;
+    private String ejemplo;
+    
+    
+    /**
+     * Constructor
+     * @param vocablo Palabra.
+     * @param categoria Categoría gramatical a la que pertenece.
+     * @param es_soez Indica si el término es soez.
+     * @param ejemplo Frase de ejemplo.
+     */
+    public Vocablo(String vocablo, String categoria, boolean es_soez, String ejemplo) {
         
         this.vocablo = vocablo;
         this.categoria = categoria;
         this.es_soez = es_soez;
+        this.ejemplo = ejemplo;
         
     }
 
+    
     public String getVocablo() {
         
         return vocablo;
         
     }
+    
 
     public String getCategoria() {
         
@@ -37,17 +46,19 @@ public class Vocablo {
         
     }
 
-    public String isEs_soez() {
+    public boolean isEs_soez() {
         
         return es_soez;
         
     }
 
-    public void setVocablo(String vocablo) {
-        
-        this.vocablo = vocablo;
-        
+    
+    public String getEjemplo() {
+    
+        return ejemplo;
+    
     }
+    
 
     public void setCategoria(String categoria){
             
@@ -55,11 +66,19 @@ public class Vocablo {
     
     }
 
-    public void setEs_soez(String es_soez) {
+    public void setEs_soez(boolean es_soez) {
 
         this.es_soez = es_soez;
 
     }
+    
+    
+    public void setEjemplo(String ejemplo) {
+        
+        this.ejemplo = ejemplo;
+    
+    }
+    
 
     @Override
     public boolean equals(Object obj) {
@@ -82,8 +101,9 @@ public class Vocablo {
     @Override
     public String toString() {
 
-        return "\n  " + vocablo;
+        return "\n  " + vocablo + categoria + ejemplo;
     
     }
      
+    
 }

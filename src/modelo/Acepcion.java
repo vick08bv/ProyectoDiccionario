@@ -1,26 +1,31 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package modelo;
+
 
 import java.util.Objects;
 
+
 /**
- *
- * @author vick0
+ * Acepción para un vocablo.
  */
 public class Acepcion {
     
-    private String acepcion;
+    
+    private final String acepcion;
     private String ejemplo;
+    private String explicacion;
 
     
-    public Acepcion(String acepcion, String ejemplo) {
+    /**
+     * Constructor.
+     * @param acepcion Acepción.
+     * @param ejemplo Ejemplo del uso de la acepción.
+     * @param explicacion Explicación del ejemplo usado.
+     */
+    public Acepcion(String acepcion, String ejemplo, String explicacion) {
         
         this.acepcion = acepcion;
         this.ejemplo = ejemplo;
+        this.explicacion = explicacion;
         
     }
     
@@ -38,17 +43,17 @@ public class Acepcion {
 
     }
     
-    
-    public void setAcepcion(String acepcion) {
-        
-        this.acepcion = acepcion;
-        
-    }
-    
 
     public void setEjemplo(String ejemplo) {
         
         this.ejemplo = ejemplo;
+        
+    }
+
+    
+    public void setExplicacion(String explicacion) {
+        
+        this.explicacion = explicacion;
         
     }
 
@@ -73,7 +78,18 @@ public class Acepcion {
 
     @Override
     public String toString() {
-        return "\n  " + acepcion + ":  " + ejemplo;
+        
+        String ejemplo = this.ejemplo; String explicacion = this.explicacion;
+        
+        if(ejemplo == null){
+            ejemplo = ""; explicacion = "";
+        } else {
+            if(explicacion == null){
+                explicacion = "";
+            }
+        }
+        
+        return "\n " + acepcion + ": " + ejemplo + " (" + explicacion + ")";
     }
 
     

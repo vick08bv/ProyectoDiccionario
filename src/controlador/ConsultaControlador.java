@@ -1,34 +1,26 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controlador;
 
-/**
- *
- * @author vick0
- */
 
 import conexion.Conexion;
-import java.sql.PreparedStatement;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import modelo.Vocablo;
-import modelo.Acepcion;
-import modelo.Antonimo;
-import modelo.Sinonimo;
-import modelo.Derivado;
+import java.sql.PreparedStatement;
 
+
+/**
+ * Controlador para las consultas especiales del adminisitrador.
+ */
 public class ConsultaControlador {
    
+    
     private Conexion cnx = null;
     private String info = "";
     
+    
     /**
      * Constructor.
-     * @param cnx - La conexion establecida.
+     * @param cnx
      */
     public ConsultaControlador(Conexion cnx) {
         
@@ -36,29 +28,38 @@ public class ConsultaControlador {
     
     }
     
-    public ResultSet consulta(String query){
+    
+    /**
+     * Consulta especial.
+     * @param consulta Consulta por realizar.
+     * @return Resultados
+     */
+    public ResultSet consulta(String consulta){
+        
+        if(consulta.replace("\n", "").replace("\t", "").replace(" ", "").equals("")){            
+            info = "\t\t       Consulta vacía.";
+            return null;
+        }
     
         try {
             
-            PreparedStatement pst = cnx.getConexion().prepareStatement(query);
-            
+            PreparedStatement pst = cnx.getConexion().prepareStatement(consulta);           
             ResultSet rs = pst.executeQuery();
-            
-            info = "";
-            
+            info = "\t\t     Operación realizada.";
             return rs;
             
-        } catch (SQLException ex) {
-            
-            info = ex.toString();
-            
-            return null;
-            
+        } catch (SQLException ex) {            
+            info = ex.toString();           
+            return null;          
         }
     
     }
     
     
+    /**
+     * Informació sobre las excepciones ocurridas.
+     * @return 
+     */
     public String getInfo(){
         
         return this.info;
