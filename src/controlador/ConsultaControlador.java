@@ -30,6 +30,36 @@ public class ConsultaControlador {
     
     
     /**
+     * Verifica si un usuario está registrado como administrador.
+     * @param usuario Usuario que desea ingresar.
+     * @param contrasena Constrasena del usuario.
+     * @return Resultados
+     */
+    public boolean ingresa(String usuario, String contrasena){
+    
+        String query = "select contrasena from Administrador where usuario = ?";
+        
+        try {
+            
+            PreparedStatement pst = cnx.getConexion().prepareStatement(query);            
+            pst.setString(1, usuario);
+            ResultSet rs = pst.executeQuery();
+            
+            if(rs.next()){            
+                return rs.getString(1).equals(contrasena);
+            } else {
+                return false;
+            }
+            
+        } catch (SQLException ex) {  
+            System.out.println(ex);
+            return false;
+        }
+    
+    }
+    
+    
+    /**
      * Consulta especial.
      * @param consulta Consulta por realizar.
      * @return Resultados
@@ -44,9 +74,10 @@ public class ConsultaControlador {
         try {
             
             PreparedStatement pst = cnx.getConexion().prepareStatement(consulta);           
-            ResultSet rs = pst.executeQuery();
+            
+            pst.execute();
             info = "\t\t     Operación realizada.";
-            return rs;
+            return pst.getResultSet();
             
         } catch (SQLException ex) {            
             info = ex.toString();           

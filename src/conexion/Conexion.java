@@ -4,8 +4,6 @@ import java.sql.*;
 
 /**
  * Clase donde definimos la conexion con nuestra base de datos.
- * 
- * @author 
  */
 public class Conexion {
     

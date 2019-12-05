@@ -26,9 +26,6 @@ import javax.swing.table.DefaultTableModel;
  */
 public class vistaDiccionario extends javax.swing.JFrame {
     
-    private final String usuario;
-    private final String contrasena;
-    
     private boolean admin;
     
     private final Conexion cnx;
@@ -43,11 +40,10 @@ public class vistaDiccionario extends javax.swing.JFrame {
      * Nueva interfaz.
      */
     public vistaDiccionario() {
-
-        usuario = "root";
-        contrasena = "root";
-    
+        
         cnx = new Conexion();
+        
+        cnx.conectar();
     
         vbc = new VocabloControlador(cnx);
         apc = new AcepcionControlador(cnx);
@@ -55,9 +51,8 @@ public class vistaDiccionario extends javax.swing.JFrame {
         ccc = new ConsultaControlador(cnx);
         
         initComponents();
-        cnx.conectar();
         
-        this.setTitle("MySQL-Diccionario");
+        this.setTitle("Diccionario Urbano");
         this.setLocationRelativeTo(null);
         
         //Ventana de inicio de sesión.
@@ -75,6 +70,11 @@ public class vistaDiccionario extends javax.swing.JFrame {
         panelAyuda.setTitle("Ayuda");
         panelAyuda.setLocation(375,145);
         panelAyuda.setSize(350, 250);
+        
+        panelInicio.setTitle("Diccionario Urbano");
+        panelInicio.setLocation(550,200);
+        panelInicio.setSize(314, 250);
+        panelInicio.setVisible(true);
         
         // Se desactivan los componentes usados para
         // el manejo del diccionario por parte 
@@ -359,6 +359,11 @@ public class vistaDiccionario extends javax.swing.JFrame {
         panel8 = new javax.swing.JPanel();
         jScrollPane7 = new javax.swing.JScrollPane();
         ayudaInfo = new javax.swing.JTextArea();
+        panelInicio = new javax.swing.JFrame();
+        panel9 = new javax.swing.JPanel();
+        imagenInicio = new javax.swing.JLabel();
+        entrarInicio = new javax.swing.JButton();
+        salirInicio = new javax.swing.JButton();
         principal = new javax.swing.JPanel();
         ventanas = new javax.swing.JTabbedPane();
         consulta = new javax.swing.JPanel();
@@ -649,7 +654,74 @@ public class vistaDiccionario extends javax.swing.JFrame {
                 .addComponent(panel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        panelInicio.setResizable(false);
+
+        panel9.setBackground(new java.awt.Color(245, 245, 255));
+
+        imagenInicio.setBackground(new java.awt.Color(245, 245, 255));
+        imagenInicio.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        imagenInicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/imagenDiccionario.png"))); // NOI18N
+        imagenInicio.setText("jLabel1");
+
+        entrarInicio.setBackground(new java.awt.Color(245, 245, 255));
+        entrarInicio.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        entrarInicio.setForeground(new java.awt.Color(0, 51, 153));
+        entrarInicio.setText("Entrar");
+        entrarInicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                entrarInicioActionPerformed(evt);
+            }
+        });
+
+        salirInicio.setBackground(new java.awt.Color(245, 245, 255));
+        salirInicio.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        salirInicio.setForeground(new java.awt.Color(255, 51, 51));
+        salirInicio.setText("Salir");
+        salirInicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                salirInicioActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout panel9Layout = new javax.swing.GroupLayout(panel9);
+        panel9.setLayout(panel9Layout);
+        panel9Layout.setHorizontalGroup(
+            panel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel9Layout.createSequentialGroup()
+                .addGap(36, 36, 36)
+                .addComponent(entrarInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(salirInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(36, 36, 36))
+            .addGroup(panel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(imagenInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        panel9Layout.setVerticalGroup(
+            panel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(imagenInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 169, Short.MAX_VALUE)
+                .addGap(11, 11, 11)
+                .addGroup(panel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(entrarInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(salirInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+
+        javax.swing.GroupLayout panelInicioLayout = new javax.swing.GroupLayout(panelInicio.getContentPane());
+        panelInicio.getContentPane().setLayout(panelInicioLayout);
+        panelInicioLayout.setHorizontalGroup(
+            panelInicioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(panel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        panelInicioLayout.setVerticalGroup(
+            panelInicioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelInicioLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(panel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
 
         consulta.setForeground(new java.awt.Color(153, 204, 255));
 
@@ -1430,8 +1502,7 @@ public class vistaDiccionario extends javax.swing.JFrame {
 
     private void ingresarAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ingresarAdminActionPerformed
         
-        if((usuarioAdmin.getText().equals(this.usuario)) && 
-            contrasenaAdmin.getText().equals(this.contrasena)){
+        if(ccc.ingresa(usuarioAdmin.getText(), contrasenaAdmin.getText())){
             
             // Cuando el administrador iniciia sesión,
             // se activan las características especiales
@@ -1447,12 +1518,30 @@ public class vistaDiccionario extends javax.swing.JFrame {
         
         } else {
             
-            // La ventana permanece en espera de que
-            // el administrador se identifique.
+            if(usuarioAdmin.getText().replace(" ","").equals("")){
             
-            usuarioAdmin.setText("");
-            contrasenaAdmin.setText("");
-            anuncioAdmin.setText("Usuario incorrecto.");
+                anuncioAdmin.setText("Ingrese su usuario.");
+                contrasenaAdmin.setText("");
+                
+            } else {
+                
+                if(contrasenaAdmin.getText().replace(" ","").equals("")){
+            
+                    anuncioAdmin.setText("Ingrese la contraseña.");
+                    usuarioAdmin.setText("");
+                
+                } else {
+                
+                    // La ventana permanece en espera de que
+                    // el administrador se identifique.
+            
+                    usuarioAdmin.setText("");
+                    contrasenaAdmin.setText("");
+                    anuncioAdmin.setText("Usuario incorrecto.");
+                
+                }
+                
+            }
             
         }
         
@@ -1547,9 +1636,13 @@ public class vistaDiccionario extends javax.swing.JFrame {
 
     private void salirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salirActionPerformed
         
-        // Termina la aplicación.
-           cnx.desconectar();       
-           System.exit(0);
+        // Termina la sesión.
+        
+            activar(false);
+           
+            panelInicio.setVisible(true);
+            
+            this.setVisible(false);
         
     }//GEN-LAST:event_salirActionPerformed
 
@@ -1596,10 +1689,10 @@ public class vistaDiccionario extends javax.swing.JFrame {
 
     private void consultaEspecialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_consultaEspecialActionPerformed
         
-        // Organiza los resultados de una consulta
+        // Organiza los resultados de una ingresa
         // y los muestra al usuario.
             
-        //Se realiza la consulta.  
+        //Se realiza la ingresa.  
         ResultSet rs = ccc.consulta(consultaTexto.getText());
             
         // Si no hay resultados por mostrar, 
@@ -1617,20 +1710,11 @@ public class vistaDiccionario extends javax.swing.JFrame {
             try {
 
                 ResultSetMetaData rsmd = rs.getMetaData();  
-                String tipoColumna;
                 int columnas = rsmd.getColumnCount();
 
                 // Se crean las columnas.                   
                 for (int i = 1; i <= columnas; i++ ) {
-                    
-                    tipoColumna = rsmd.getColumnTypeName(i);
-                    
-                    if("TINYINT".equals(tipoColumna) || "BOOLEAN".equals(tipoColumna)){
-                    }
-                    
-                    model.addColumn(rsmd.getColumnLabel(i));
-                       
-                    
+                    model.addColumn(rsmd.getColumnLabel(i)); 
                 }
 
                 String[] entrada = new String[columnas];
@@ -1667,6 +1751,28 @@ public class vistaDiccionario extends javax.swing.JFrame {
         this.limpiar(true);
     }//GEN-LAST:event_limpiaInfoVocablosActionPerformed
 
+    private void entrarInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entrarInicioActionPerformed
+        
+        // Inicia la sesión.
+        
+        panelInicio.setVisible(false);
+        
+        try {
+            Thread.sleep(1000);
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+        
+        this.setVisible(true);
+        
+    }//GEN-LAST:event_entrarInicioActionPerformed
+
+    private void salirInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salirInicioActionPerformed
+        
+        System.exit(0);
+        
+    }//GEN-LAST:event_salirInicioActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1697,7 +1803,7 @@ public class vistaDiccionario extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new vistaDiccionario().setVisible(true);
+                new vistaDiccionario().setVisible(false);
             }
         });
     }
@@ -1737,6 +1843,7 @@ public class vistaDiccionario extends javax.swing.JFrame {
     private javax.swing.JTextField edicionVocablo1;
     private javax.swing.JButton editarVocablo;
     private javax.swing.JTextField ejemploUso;
+    private javax.swing.JButton entrarInicio;
     private javax.swing.JRadioButton esSoez;
     private javax.swing.JPanel especial;
     private javax.swing.JTextField etiquetaAcepcion;
@@ -1752,6 +1859,7 @@ public class vistaDiccionario extends javax.swing.JFrame {
     private javax.swing.JTextField etiquetaSinonimo;
     private javax.swing.JTextField etiquetaVocablo;
     private javax.swing.JTextField etiquetaVocablo1;
+    private javax.swing.JLabel imagenInicio;
     private javax.swing.JTextField indicaCategoria;
     private javax.swing.JTextField indicaSoez;
     private javax.swing.JTextArea informacion;
@@ -1780,12 +1888,15 @@ public class vistaDiccionario extends javax.swing.JFrame {
     private javax.swing.JScrollPane panel6;
     private javax.swing.JScrollPane panel7;
     private javax.swing.JPanel panel8;
+    private javax.swing.JPanel panel9;
     private javax.swing.JFrame panelAyuda;
     private javax.swing.JPanel panelIngreso;
+    private javax.swing.JFrame panelInicio;
     private javax.swing.JPanel panelMostrarVocablos;
     private javax.swing.JPanel principal;
     private javax.swing.JButton refrescarVocablos;
     private javax.swing.JButton salir;
+    private javax.swing.JButton salirInicio;
     private javax.swing.JTextArea sinonimosVocablo;
     private javax.swing.JTable tabla;
     private javax.swing.JTextField usuarioAdmin;
